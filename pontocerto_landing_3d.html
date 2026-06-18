@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PontoCerto liga clientes a profissionais locais. Começamos por jardinagem, limpeza de terrenos, poda, abate e manutenção de espaços exteriores.">
+    <title>PontoCerto - Serviços Locais, Começando por Espaços Exteriores</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ===== Tokens ===== */
+        :root {
+          --ink: #1C2118;
+          --ink-soft: #3D4A2E;
+          --cream: #F7F4EC;
+          --cream-deep: #EFEADB;
+          --sage: #8A9A5B;
+          --sage-deep: #5F6E3D;
+          --clay: #B8895E;
+          --clay-deep: #8E6443;
+          --gold: #D8B06A;
+          --line: rgba(28, 33, 24, 0.12);
+          --line-soft: rgba(28, 33, 24, 0.07);
+          --shadow-soft: 0 24px 60px rgba(28, 33, 24, 0.12);
+          --shadow-3d: 0 34px 80px rgba(28, 33, 24, 0.18), 0 10px 24px rgba(28, 33, 24, 0.10);
+          --font-display: "Fraunces", Georgia, serif;
+          --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          --font-mono: "Space Mono", monospace;
+          --radius: 14px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+          font-family: var(--font-body);
+          background: radial-gradient(circle at 10% 0%, rgba(138, 154, 91, 0.14), transparent 32%), var(--cream);
+          color: var(--ink);
+          font-size: 16px;
+          line-height: 1.6;
+          -webkit-font-smoothing: antialiased;
+          overflow-x: hidden;
+        }
+        .container {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 0 32px;
+        }
+        a { color: inherit; text-decoration: none; }
+        h1, h2, h3, h4 {
+          font-family: var(--font-display);
+          font-weight: 500;
+          letter-spacing: -0.01em;
+          color: var(--ink);
+        }
+        em { font-style: italic; color: var(--sage-deep); }
+
+        .grain-overlay {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 999;
+          opacity: 0.035;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          mix-blend-mode: multiply;
+        }
+
+        /* ===== Header ===== */
+        .site-header {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background: rgba(247, 244, 236, 0.82);
+          backdrop-filter: blur(14px);
+          border-bottom: 1px solid var(--line-soft);
+        }
+        .header-inner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 76px;
+        }
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          font-family: var(--font-display);
+          font-size: 21px;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .logo i {
+          display: grid;
+          place-items: center;
+          width: 32px;
+          height: 32px;
+          border-radius: 10px;
+          color: var(--cream);
+          background: linear-gradient(145deg, var(--sage), var(--sage-deep));
+          box-shadow: 0 10px 22px rgba(95, 110, 61, 0.22), inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+        .main-nav {
+          display: flex;
+          gap: 34px;
+        }
+        .main-nav a {
+          font-size: 14.5px;
+          color: var(--ink-soft);
+          transition: color 0.15s ease, transform 0.15s ease;
+        }
+        .main-nav a:hover { color: var(--ink); transform: translateY(-1px); }
+
+        /* ===== Buttons ===== */
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          font-family: var(--font-body);
+          font-weight: 600;
+          font-size: 15px;
+          border-radius: 999px;
+          border: 1px solid transparent;
+          cursor: pointer;
+          transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+          transform-style: preserve-3d;
+          position: relative;
+          overflow: hidden;
+        }
+        .btn::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.28) 45%, transparent 70%);
+          transform: translateX(-120%);
+          transition: transform 0.45s ease;
+        }
+        .btn:hover::after { transform: translateX(120%); }
+        .btn-small { padding: 10px 18px; font-size: 14px; }
+        .btn-large { padding: 15px 28px; font-size: 16px; }
+        .btn-primary {
+          background: linear-gradient(145deg, var(--ink), #2f3a28);
+          color: var(--cream);
+          box-shadow: 0 13px 28px rgba(28, 33, 24, 0.22), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .btn-primary:hover { background: linear-gradient(145deg, #27301f, var(--ink-soft)); transform: translateY(-3px) translateZ(10px); box-shadow: var(--shadow-soft); }
+        .btn-secondary {
+          background: rgba(247, 244, 236, 0.52);
+          border-color: rgba(28, 33, 24, 0.20);
+          color: var(--ink);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+        }
+        .btn-secondary:hover { background: var(--cream-deep); transform: translateY(-3px) translateZ(10px); box-shadow: 0 15px 32px rgba(28,33,24,0.10); }
+
+        /* ===== 3D Hero ===== */
+        .hero {
+          position: relative;
+          padding: 104px 0 94px;
+          overflow: hidden;
+          perspective: 1200px;
+        }
+        .cadastre-pattern {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          transform: translateZ(-120px) scale(1.08);
+        }
+        .cadastre-pattern::before,
+        .cadastre-pattern::after {
+          content: "";
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(4px);
+          opacity: 0.75;
+        }
+        .cadastre-pattern::before {
+          width: 330px;
+          height: 330px;
+          top: 12%;
+          right: 7%;
+          background: radial-gradient(circle, rgba(184, 137, 94, 0.26), transparent 70%);
+          animation: floatOrb 8s ease-in-out infinite;
+        }
+        .cadastre-pattern::after {
+          width: 240px;
+          height: 240px;
+          bottom: 8%;
+          right: 30%;
+          background: radial-gradient(circle, rgba(138, 154, 91, 0.22), transparent 72%);
+          animation: floatOrb 10s ease-in-out infinite reverse;
+        }
+        .cadastre-pattern svg { width: 100%; height: 100%; opacity: 0.9; }
+        .plot-lines path { stroke: var(--ink); stroke-opacity: 0.06; stroke-width: 1; fill: none; }
+        .plot-marks circle { fill: var(--clay); opacity: 0.35; }
+
+        .hero-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 1.05fr) minmax(330px, 0.75fr);
+          gap: 56px;
+          align-items: center;
+          position: relative;
+          z-index: 1;
+        }
+        .hero-inner { max-width: 740px; }
+        .eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: var(--font-mono);
+          font-size: 13px;
+          letter-spacing: 0.04em;
+          color: var(--clay-deep);
+          text-transform: uppercase;
+          margin-bottom: 24px;
+        }
+        .eyebrow::before {
+          content: "";
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--sage);
+          box-shadow: 0 0 0 7px rgba(138,154,91,0.13);
+        }
+        .hero h1 {
+          font-size: clamp(40px, 6vw, 66px);
+          line-height: 1.05;
+          margin-bottom: 28px;
+        }
+        .hero-lead {
+          font-size: 18px;
+          line-height: 1.7;
+          color: var(--ink-soft);
+          max-width: 610px;
+          margin-bottom: 40px;
+        }
+        .hero-actions {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 34px;
+          flex-wrap: wrap;
+        }
+        .hero-actions--center { justify-content: center; }
+        .hero-trust {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 14px;
+          color: var(--ink-soft);
+          padding: 11px 14px;
+          border: 1px solid var(--line-soft);
+          border-radius: 999px;
+          background: rgba(247,244,236,0.72);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
+        }
+        .hero-trust i { color: var(--sage-deep); }
+        .hero-trust strong { color: var(--ink); font-weight: 700; }
+
+        .hero-visual {
+          position: relative;
+          min-height: 430px;
+          perspective: 1000px;
+        }
+        .service-stack {
+          position: absolute;
+          inset: 0;
+          transform-style: preserve-3d;
+          transform: rotateX(9deg) rotateY(-13deg);
+          transition: transform 0.25s ease-out;
+        }
+        .floating-card {
+          position: absolute;
+          width: 300px;
+          border: 1px solid rgba(28, 33, 24, 0.10);
+          border-radius: 22px;
+          background: rgba(247, 244, 236, 0.88);
+          backdrop-filter: blur(16px);
+          box-shadow: var(--shadow-3d);
+          padding: 22px;
+          transform-style: preserve-3d;
+        }
+        .floating-card::before {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          border-radius: 21px;
+          background: linear-gradient(145deg, rgba(255,255,255,0.45), transparent 45%);
+          pointer-events: none;
+        }
+        .floating-card--main {
+          top: 38px;
+          left: 28px;
+          width: 330px;
+          transform: translateZ(62px);
+          animation: floatCard 6s ease-in-out infinite;
+        }
+        .floating-card--dark {
+          right: 0;
+          top: 210px;
+          background: linear-gradient(145deg, #222a1c, var(--ink));
+          color: var(--cream);
+          transform: translateZ(115px) rotateY(8deg);
+          animation: floatCard 7.2s ease-in-out infinite reverse;
+        }
+        .floating-card--small {
+          left: 0;
+          bottom: 12px;
+          width: 245px;
+          transform: translateZ(26px) rotateY(-7deg);
+          animation: floatCard 8s ease-in-out infinite;
+        }
+        .floating-card h3,
+        .floating-card h4 { position: relative; z-index: 1; }
+        .floating-card h3 { font-size: 22px; margin-bottom: 12px; }
+        .floating-card h4 { font-family: var(--font-body); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 10px; color: inherit; }
+        .floating-card p { position: relative; z-index: 1; color: var(--ink-soft); font-size: 14px; }
+        .floating-card--dark p { color: rgba(247,244,236,0.72); }
+        .card-icon {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          place-items: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+          margin-bottom: 16px;
+          background: linear-gradient(145deg, rgba(138,154,91,0.20), rgba(184,137,94,0.16));
+          color: var(--sage-deep);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 13px 26px rgba(28,33,24,0.10);
+          transform: translateZ(30px);
+        }
+        .floating-card--dark .card-icon { background: rgba(247,244,236,0.10); color: var(--clay); }
+        .mini-map {
+          margin-top: 14px;
+          position: relative;
+          height: 92px;
+          border-radius: 16px;
+          background:
+            linear-gradient(90deg, rgba(28,33,24,0.05) 1px, transparent 1px),
+            linear-gradient(rgba(28,33,24,0.05) 1px, transparent 1px),
+            rgba(138,154,91,0.10);
+          background-size: 22px 22px;
+          overflow: hidden;
+        }
+        .mini-map span {
+          position: absolute;
+          display: block;
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          background: var(--clay);
+          box-shadow: 0 0 0 7px rgba(184,137,94,0.18);
+        }
+        .mini-map span:nth-child(1) { left: 24%; top: 32%; }
+        .mini-map span:nth-child(2) { left: 63%; top: 56%; background: var(--sage-deep); box-shadow: 0 0 0 7px rgba(95,110,61,0.15); }
+        .mini-map span:nth-child(3) { left: 78%; top: 20%; }
+        .connection-line {
+          position: absolute;
+          left: 105px;
+          top: 148px;
+          width: 220px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(184,137,94,0.55), transparent);
+          transform: translateZ(74px) rotate(28deg);
+          opacity: 0.85;
+        }
+        .connection-line::after {
+          content: "";
+          position: absolute;
+          right: 30%;
+          top: -3px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--gold);
+          animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        /* ===== Generic sections ===== */
+        .section-eyebrow {
+          font-family: var(--font-mono);
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: var(--clay-deep);
+          margin-bottom: 14px;
+        }
+        .section-title {
+          font-size: clamp(32px, 4.2vw, 46px);
+          line-height: 1.12;
+          margin-bottom: 22px;
+        }
+        .section-lead {
+          color: var(--ink-soft);
+          max-width: 690px;
+          font-size: 17px;
+          margin-bottom: 54px;
+        }
+
+        /* ===== Problem / Why ===== */
+        .why {
+          padding: 92px 0;
+          position: relative;
+        }
+        .why-grid {
+          display: grid;
+          grid-template-columns: 0.9fr 1.1fr;
+          gap: 34px;
+          align-items: stretch;
+        }
+        .why-panel {
+          border: 1px solid var(--line);
+          border-radius: 24px;
+          background: linear-gradient(145deg, rgba(247,244,236,0.95), rgba(239,234,219,0.72));
+          padding: 34px;
+          box-shadow: var(--shadow-soft);
+          transform-style: preserve-3d;
+        }
+        .why-panel h2 { font-size: 34px; margin-bottom: 18px; }
+        .why-panel p { color: var(--ink-soft); margin-bottom: 18px; }
+        .feature-list {
+          list-style: none;
+          display: grid;
+          gap: 16px;
+        }
+        .feature-list li {
+          display: flex;
+          gap: 14px;
+          align-items: flex-start;
+          padding: 18px;
+          border: 1px solid var(--line-soft);
+          border-radius: 18px;
+          background: rgba(255,255,255,0.27);
+          box-shadow: 0 12px 28px rgba(28,33,24,0.06);
+          transition: transform .18s ease, box-shadow .18s ease;
+        }
+        .feature-list li:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(28,33,24,0.10); }
+        .feature-list i { color: var(--sage-deep); margin-top: 4px; }
+        .feature-list strong { display: block; margin-bottom: 3px; }
+        .feature-list span { color: var(--ink-soft); font-size: 14.5px; }
+
+        /* ===== Gateways ===== */
+        .gateways { padding: 0 0 100px; }
+        .gateway-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+          perspective: 1100px;
+        }
+        .tilt-card {
+          transform-style: preserve-3d;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          will-change: transform;
+        }
+        .tilt-card:hover { box-shadow: var(--shadow-3d); }
+        .gateway-card {
+          background: rgba(247,244,236,0.88);
+          border: 1px solid var(--line);
+          border-radius: 24px;
+          padding: 44px 40px;
+          position: relative;
+          overflow: hidden;
+        }
+        .gateway-card::after {
+          content: "";
+          position: absolute;
+          width: 220px;
+          height: 220px;
+          right: -90px;
+          top: -100px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(138,154,91,0.20), transparent 70%);
+          transform: translateZ(-1px);
+        }
+        .gateway-tag {
+          display: inline-block;
+          font-family: var(--font-mono);
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: var(--sage-deep);
+          margin-bottom: 18px;
+          position: relative;
+          z-index: 1;
+        }
+        .gateway-card h2 {
+          font-size: 30px;
+          line-height: 1.2;
+          margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
+        }
+        .gateway-card > p {
+          font-size: 15.5px;
+          color: var(--ink-soft);
+          margin-bottom: 24px;
+          position: relative;
+          z-index: 1;
+        }
+        .gateway-card--alt {
+          background: linear-gradient(145deg, #222a1c, var(--ink));
+          border-color: rgba(247,244,236,0.08);
+        }
+        .gateway-card--alt::after { background: radial-gradient(circle, rgba(184,137,94,0.22), transparent 70%); }
+        .gateway-card--alt h2,
+        .gateway-card--alt .gateway-tag { color: var(--cream); }
+        .gateway-card--alt p { color: rgba(247, 244, 236, 0.72); }
+        .gateway-card--alt .gateway-list li { color: rgba(247, 244, 236, 0.85); }
+        .gateway-card--alt .text-link { color: var(--clay); }
+        .gateway-list {
+          list-style: none;
+          margin-bottom: 28px;
+          position: relative;
+          z-index: 1;
+        }
+        .gateway-list li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 14.5px;
+          color: var(--ink-soft);
+          padding: 7px 0;
+        }
+        .gateway-list i { font-size: 17px; color: var(--clay); flex-shrink: 0; }
+        .text-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-weight: 700;
+          font-size: 15px;
+          color: var(--clay-deep);
+          transition: gap 0.15s ease;
+          position: relative;
+          z-index: 1;
+        }
+        .text-link:hover { gap: 11px; }
+
+        /* ===== How it works ===== */
+        .how-it-works {
+          padding: 96px 0;
+          background: linear-gradient(180deg, var(--cream-deep), rgba(239,234,219,0.62));
+          border-top: 1px solid var(--line);
+          border-bottom: 1px solid var(--line);
+        }
+        .paths-grid {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          gap: 0 56px;
+        }
+        .paths-divider {
+          width: 1px;
+          background: linear-gradient(180deg, transparent, var(--line), transparent);
+        }
+        .path-heading {
+          font-size: 21px;
+          margin-bottom: 32px;
+          color: var(--ink-soft);
+        }
+        .path-step {
+          display: flex;
+          gap: 18px;
+          margin-bottom: 24px;
+          position: relative;
+          padding: 18px;
+          border-radius: 18px;
+          background: rgba(247,244,236,0.50);
+          border: 1px solid rgba(28,33,24,0.06);
+          box-shadow: 0 11px 28px rgba(28,33,24,0.05);
+        }
+        .path-step:last-child { margin-bottom: 0; }
+        .path-marker {
+          flex-shrink: 0;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: var(--sage);
+          margin-top: 7px;
+          box-shadow: 0 0 0 8px rgba(138,154,91,0.14);
+        }
+        .path-marker--alt { background: var(--clay); box-shadow: 0 0 0 8px rgba(184,137,94,0.14); }
+        .path-step h4 { font-size: 16.5px; margin-bottom: 6px; }
+        .path-step p { font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
+
+        /* ===== Services ===== */
+        .services { padding: 100px 0; }
+        .services-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 18px;
+          perspective: 1000px;
+        }
+        .service-card {
+          background: rgba(247,244,236,0.86);
+          border: 1px solid var(--line);
+          border-radius: 22px;
+          padding: 34px 30px;
+          transform-style: preserve-3d;
+          box-shadow: 0 16px 34px rgba(28,33,24,0.06);
+          transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .service-card:hover { transform: translateY(-8px) rotateX(2deg); box-shadow: var(--shadow-soft); }
+        .service-card i {
+          font-size: 24px;
+          color: var(--sage-deep);
+          margin-bottom: 18px;
+          display: grid;
+          place-items: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+          background: rgba(138,154,91,0.13);
+          transform: translateZ(24px);
+        }
+        .service-card h3 { font-size: 18px; margin-bottom: 8px; }
+        .service-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+
+        /* ===== Soon ===== */
+        .soon {
+          padding: 92px 0;
+          background: var(--cream-deep);
+          border-top: 1px solid var(--line);
+          border-bottom: 1px solid var(--line);
+        }
+        .soon-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 14px;
+        }
+        .soon-item {
+          padding: 22px;
+          border: 1px dashed rgba(28,33,24,0.18);
+          border-radius: 20px;
+          background: rgba(247,244,236,0.55);
+          color: var(--ink-soft);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .soon-item i { color: var(--clay-deep); }
+
+        /* ===== Final CTA ===== */
+        .final-cta {
+          padding: 110px 0 120px;
+          background:
+            radial-gradient(circle at 50% 0%, rgba(184,137,94,0.20), transparent 38%),
+            linear-gradient(145deg, #20271b, var(--ink));
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+        .final-cta::before {
+          content: "";
+          position: absolute;
+          inset: auto -10% -55% -10%;
+          height: 320px;
+          background: radial-gradient(ellipse, rgba(138,154,91,0.16), transparent 68%);
+        }
+        .final-cta-inner { position: relative; z-index: 1; }
+        .final-cta-inner h2 {
+          font-size: clamp(34px, 4vw, 48px);
+          color: var(--cream);
+          margin-bottom: 16px;
+        }
+        .final-cta-inner > p {
+          font-size: 17px;
+          color: rgba(247, 244, 236, 0.74);
+          margin: 0 auto 40px;
+          max-width: 660px;
+        }
+        .final-cta .btn-primary {
+          background: linear-gradient(145deg, var(--clay), #d3a06d);
+          color: var(--ink);
+        }
+        .final-cta .btn-primary:hover { background: linear-gradient(145deg, #cc9a6c, var(--clay)); }
+        .final-cta .btn-secondary {
+          border-color: rgba(247, 244, 236, 0.28);
+          color: var(--cream);
+          background: rgba(247,244,236,0.05);
+        }
+        .final-cta .btn-secondary:hover { background: rgba(247, 244, 236, 0.10); }
+
+        /* ===== Footer ===== */
+        .site-footer {
+          background: var(--cream-deep);
+          border-top: 1px solid var(--line);
+          padding: 72px 0 28px;
+        }
+        .footer-inner {
+          display: flex;
+          justify-content: space-between;
+          gap: 64px;
+          margin-bottom: 56px;
+        }
+        .footer-brand .logo { margin-bottom: 12px; }
+        .footer-brand p { font-size: 14px; color: var(--ink-soft); max-width: 300px; }
+        .footer-links { display: flex; gap: 64px; }
+        .footer-links h4 {
+          font-family: var(--font-body);
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          color: var(--ink-soft);
+          margin-bottom: 16px;
+          font-weight: 700;
+        }
+        .footer-links a {
+          display: block;
+          font-size: 14.5px;
+          color: var(--ink-soft);
+          padding: 6px 0;
+          transition: color 0.15s ease, transform 0.15s ease;
+        }
+        .footer-links a:hover { color: var(--ink); transform: translateX(2px); }
+        .footer-bottom { border-top: 1px solid var(--line); padding-top: 24px; }
+        .footer-bottom p { font-size: 13px; color: var(--ink-soft); }
+
+        /* ===== Animations ===== */
+        @keyframes floatOrb {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(18px, -22px, 0) scale(1.04); }
+        }
+        @keyframes floatCard {
+          0%, 100% { translate: 0 0; }
+          50% { translate: 0 -12px; }
+        }
+        @keyframes pulseDot {
+          0%, 100% { transform: scale(1); opacity: .75; }
+          50% { transform: scale(1.45); opacity: 1; }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 980px) {
+          .hero-layout { grid-template-columns: 1fr; }
+          .hero-visual { min-height: 360px; max-width: 500px; }
+          .why-grid { grid-template-columns: 1fr; }
+          .soon-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 860px) {
+          .main-nav { display: none; }
+          .hero { padding-top: 78px; }
+          .gateway-grid { grid-template-columns: 1fr; }
+          .paths-grid { grid-template-columns: 1fr; gap: 40px; }
+          .paths-divider { display: none; }
+          .services-grid { grid-template-columns: 1fr; }
+          .footer-inner { flex-direction: column; gap: 40px; }
+          .footer-links { flex-wrap: wrap; gap: 32px; }
+          .hero-actions { flex-direction: column; }
+          .hero-actions .btn { width: 100%; }
+          .floating-card { width: 280px; }
+          .floating-card--main { left: 16px; }
+          .floating-card--dark { right: 10px; }
+        }
+        @media (max-width: 560px) {
+          .container { padding: 0 20px; }
+          .header-inner { height: 68px; }
+          .btn-small { padding: 9px 13px; }
+          .hero-visual { min-height: 300px; transform: scale(.88); transform-origin: left top; }
+          .soon-grid { grid-template-columns: 1fr; }
+          .footer-links { flex-direction: column; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          html { scroll-behavior: auto; }
+          *, *::before, *::after { transition: none !important; animation: none !important; }
+        }
+        a:focus-visible, button:focus-visible {
+          outline: 2px solid var(--sage-deep);
+          outline-offset: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="#" class="logo" aria-label="Página inicial da PontoCerto">
+                <i class="fa-solid fa-location-dot"></i> PontoCerto
+            </a>
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="#porque">Porquê</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#como-funciona">Como funciona</a>
+                <a href="#em-breve">Em breve</a>
+            </nav>
+            <a href="#pedir" class="btn btn-primary btn-small">Pedir serviço</a>
+        </div>
+    </header>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero">
+        <div class="cadastre-pattern" aria-hidden="true">
+            <svg viewBox="0 0 1200 620" preserveAspectRatio="none">
+                <g class="plot-lines">
+                    <path d="M-30 470 C 180 420, 260 510, 450 430 S 780 290, 1230 330" />
+                    <path d="M-40 220 C 140 190, 260 280, 420 225 S 770 160, 1240 210" />
+                    <path d="M80 650 C 220 530, 470 570, 620 430 S 910 240, 1190 80" />
+                    <path d="M0 90 C 200 160, 310 75, 520 120 S 900 220, 1230 120" />
+                </g>
+                <g class="plot-marks">
+                    <circle cx="190" cy="420" r="4" />
+                    <circle cx="610" cy="340" r="5" />
+                    <circle cx="925" cy="185" r="4" />
+                    <circle cx="1045" cy="320" r="5" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="container hero-layout">
+            <div class="hero-inner">
+                <div class="eyebrow">Serviços locais, sem complicações</div>
+                <h1>Encontre profissionais locais para tratar do que precisa.</h1>
+                <p class="hero-lead">A PontoCerto liga clientes a profissionais de confiança. Começamos pela jardinagem e limpeza de terrenos — para pedir orçamentos, comparar propostas e contratar alguém perto de si de forma simples.</p>
+                <div class="hero-actions">
+                    <a href="#pedir" class="btn btn-primary btn-large">Preciso de um profissional <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#profissionais" class="btn btn-secondary btn-large">Sou profissional</a>
+                </div>
+                <div class="hero-trust">
+                    <i class="fa-solid fa-seedling"></i>
+                    <span><strong>Projeto em lançamento:</strong> estamos a criar a primeira rede de profissionais parceiros.</span>
+                </div>
+            </div>
+
+            <div class="hero-visual" aria-hidden="true">
+                <div class="service-stack" id="serviceStack">
+                    <div class="connection-line"></div>
+                    <article class="floating-card floating-card--main">
+                        <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <h3>Pedido criado</h3>
+                        <p>Cliente descreve o serviço, adiciona fotos e indica a localização aproximada.</p>
+                        <div class="mini-map"><span></span><span></span><span></span></div>
+                    </article>
+                    <article class="floating-card floating-card--dark">
+                        <div class="card-icon"><i class="fa-solid fa-user-gear"></i></div>
+                        <h4>Profissional local</h4>
+                        <p>Recebe pedidos perto da sua zona e envia orçamento quando lhe fizer sentido.</p>
+                    </article>
+                    <article class="floating-card floating-card--small">
+                        <div class="card-icon"><i class="fa-solid fa-handshake"></i></div>
+                        <h4>Ligação direta</h4>
+                        <p>Menos telefonemas. Mais propostas claras.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHY ===== -->
+    <section class="why" id="porque">
+        <div class="container why-grid">
+            <div class="why-panel tilt-card">
+                <div class="section-eyebrow">Porque existimos</div>
+                <h2>Contratar serviços locais ainda é demasiado difícil.</h2>
+                <p>Entre pedir contactos, esperar respostas, comparar preços sem referência e não saber em quem confiar, um serviço simples pode tornar-se complicado.</p>
+                <p>A PontoCerto quer resolver isso com pedidos claros, profissionais por zona e propostas fáceis de comparar.</p>
+            </div>
+            <ul class="feature-list">
+                <li><i class="fa-solid fa-bullseye"></i><div><strong>Pedidos objetivos</strong><span>O cliente explica o que precisa, envia fotos e recebe respostas mais alinhadas.</span></div></li>
+                <li><i class="fa-solid fa-location-crosshairs"></i><div><strong>Profissionais próximos</strong><span>O foco é ligar pessoas a prestadores que já trabalham na sua área.</span></div></li>
+                <li><i class="fa-solid fa-scale-balanced"></i><div><strong>Comparação simples</strong><span>Orçamentos, disponibilidade e detalhes do serviço reunidos num só lugar.</span></div></li>
+                <li><i class="fa-solid fa-layer-group"></i><div><strong>Começar pequeno, crescer bem</strong><span>Primeiro espaços exteriores; depois novas categorias de serviços locais.</span></div></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ===== GATEWAYS ===== -->
+    <section class="gateways" id="servicos">
+        <div class="container">
+            <div class="section-eyebrow">Primeira categoria</div>
+            <h2 class="section-title">Começamos pelos espaços exteriores.</h2>
+            <p class="section-lead">Jardinagem, limpeza de terrenos, poda, abate e manutenção — serviços onde a proximidade, a rapidez e a confiança fazem toda a diferença.</p>
+
+            <div class="gateway-grid">
+                <div class="gateway-card tilt-card">
+                    <span class="gateway-tag">Para particulares e condomínios</span>
+                    <h2>Jardins cuidados</h2>
+                    <p>Profissionais para manutenção regular, cortes pontuais e revitalização do seu espaço verde.</p>
+                    <ul class="gateway-list">
+                        <li><i class="fa-solid fa-check"></i> Corte de relva e sebes</li>
+                        <li><i class="fa-solid fa-check"></i> Poda de árvores e arbustos</li>
+                        <li><i class="fa-solid fa-check"></i> Tratamento, plantação e manutenção</li>
+                    </ul>
+                    <a href="#pedir" class="text-link">Pedir serviço de jardinagem <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+
+                <div class="gateway-card gateway-card--alt tilt-card">
+                    <span class="gateway-tag">Para proprietários de terrenos</span>
+                    <h2>Terrenos limpos</h2>
+                    <p>Ajuda para prevenção de incêndios, desmatação, roço de mato e remoção de resíduos verdes.</p>
+                    <ul class="gateway-list">
+                        <li><i class="fa-solid fa-fire-extinguisher"></i> Limpeza preventiva de terrenos</li>
+                        <li><i class="fa-solid fa-tractor"></i> Desmatação e roço de mato</li>
+                        <li><i class="fa-solid fa-truck"></i> Remoção de entulho verde</li>
+                    </ul>
+                    <a href="#pedir" class="text-link">Pedir limpeza de terreno <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== COMO FUNCIONA ===== -->
+    <section class="how-it-works" id="como-funciona">
+        <div class="container">
+            <div class="section-eyebrow">Simples e transparente</div>
+            <h2 class="section-title">Como funciona a PontoCerto?</h2>
+            <p class="section-lead">A plataforma foi pensada para servir os dois lados: quem precisa de resolver um problema e quem quer receber trabalhos na sua zona.</p>
+
+            <div class="paths-grid">
+                <div id="pedir">
+                    <h3 class="path-heading">Para clientes</h3>
+                    <div class="path-step">
+                        <div class="path-marker"></div>
+                        <div>
+                            <h4>1. Faça o seu pedido</h4>
+                            <p>Descreva o serviço, indique a zona, estime a dimensão e adicione fotos se tiver.</p>
+                        </div>
+                    </div>
+                    <div class="path-step">
+                        <div class="path-marker"></div>
+                        <div>
+                            <h4>2. Receba propostas</h4>
+                            <p>Profissionais disponíveis analisam o pedido e enviam orçamento ou pedido de detalhes.</p>
+                        </div>
+                    </div>
+                    <div class="path-step">
+                        <div class="path-marker"></div>
+                        <div>
+                            <h4>3. Escolha com confiança</h4>
+                            <p>Compare respostas, combine a data e avance com o profissional que fizer mais sentido.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="paths-divider"></div>
+
+                <div id="profissionais">
+                    <h3 class="path-heading">Para profissionais</h3>
+                    <div class="path-step">
+                        <div class="path-marker path-marker--alt"></div>
+                        <div>
+                            <h4>1. Registe o seu perfil</h4>
+                            <p>Indique serviços, zonas de atuação, disponibilidade e experiência.</p>
+                        </div>
+                    </div>
+                    <div class="path-step">
+                        <div class="path-marker path-marker--alt"></div>
+                        <div>
+                            <h4>2. Receba pedidos próximos</h4>
+                            <p>Veja oportunidades da sua área e envie orçamento apenas quando lhe interessar.</p>
+                        </div>
+                    </div>
+                    <div class="path-step">
+                        <div class="path-marker path-marker--alt"></div>
+                        <div>
+                            <h4>3. Ganhe novos clientes</h4>
+                            <p>Construa reputação local e aumente os rendimentos com trabalhos bem definidos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== OUTROS SERVIÇOS ===== -->
+    <section class="services">
+        <div class="container">
+            <div class="section-eyebrow">Serviços iniciais</div>
+            <h2 class="section-title">Tudo o que o seu espaço exterior precisa.</h2>
+            <p class="section-lead">A primeira versão da PontoCerto foca-se em serviços com procura local clara e execução presencial.</p>
+
+            <div class="services-grid">
+                <div class="service-card tilt-card">
+                    <i class="fa-solid fa-scissors"></i>
+                    <h3>Manutenção regular</h3>
+                    <p>Visitas semanais, quinzenais ou mensais para manter jardins organizados e saudáveis.</p>
+                </div>
+                <div class="service-card tilt-card">
+                    <i class="fa-solid fa-tree"></i>
+                    <h3>Poda e abate</h3>
+                    <p>Intervenções em árvores, arbustos e sebes com equipamento adequado ao trabalho.</p>
+                </div>
+                <div class="service-card tilt-card">
+                    <i class="fa-solid fa-seedling"></i>
+                    <h3>Tratamento e limpeza</h3>
+                    <p>Controlo de vegetação, preparação de terrenos e remoção de resíduos verdes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== EM BREVE ===== -->
+    <section class="soon" id="em-breve">
+        <div class="container">
+            <div class="section-eyebrow">Visão da plataforma</div>
+            <h2 class="section-title">Hoje espaços exteriores. Amanhã mais serviços locais.</h2>
+            <p class="section-lead">A PontoCerto nasce com um foco claro, mas foi pensada para crescer por categorias à medida que a rede de profissionais aumenta.</p>
+            <div class="soon-grid">
+                <div class="soon-item"><i class="fa-solid fa-paint-roller"></i> Pintura</div>
+                <div class="soon-item"><i class="fa-solid fa-screwdriver-wrench"></i> Pequenas reparações</div>
+                <div class="soon-item"><i class="fa-solid fa-broom"></i> Limpezas</div>
+                <div class="soon-item"><i class="fa-solid fa-water-ladder"></i> Piscinas</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FINAL CTA ===== -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="final-cta-inner">
+                <h2>Quer fazer parte da fase inicial?</h2>
+                <p>Estamos a construir a rede de clientes e profissionais da PontoCerto. Se precisa de um serviço ou presta serviços exteriores, este é o momento certo para entrar.</p>
+                <div class="hero-actions hero-actions--center">
+                    <a href="#pedir" class="btn btn-primary btn-large">Pedir orçamento grátis</a>
+                    <a href="#profissionais" class="btn btn-secondary btn-large">Registar como profissional</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fa-solid fa-location-dot"></i> PontoCerto
+                    </div>
+                    <p>O profissional certo, no momento certo. Começamos por ligar pessoas a serviços de espaços exteriores.</p>
+                </div>
+                <div class="footer-links">
+                    <div>
+                        <h4>Serviços</h4>
+                        <a href="#servicos">Jardinagem</a>
+                        <a href="#servicos">Limpeza de terrenos</a>
+                        <a href="#servicos">Poda e abate</a>
+                    </div>
+                    <div>
+                        <h4>Plataforma</h4>
+                        <a href="#como-funciona">Como funciona</a>
+                        <a href="#profissionais">Torne-se profissional</a>
+                        <a href="#em-breve">Novas categorias</a>
+                    </div>
+                    <div>
+                        <h4>Legal</h4>
+                        <a href="#">Termos e condições</a>
+                        <a href="#">Privacidade</a>
+                        <a href="#">Contactos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 PontoCerto. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Efeito 3D subtil no hero e nos cartões. Desliga automaticamente em dispositivos que preferem menos movimento.
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (!prefersReducedMotion) {
+            const stack = document.getElementById('serviceStack');
+            const hero = document.querySelector('.hero');
+
+            if (stack && hero) {
+                hero.addEventListener('mousemove', (event) => {
+                    const rect = hero.getBoundingClientRect();
+                    const x = (event.clientX - rect.left) / rect.width - 0.5;
+                    const y = (event.clientY - rect.top) / rect.height - 0.5;
+                    stack.style.transform = `rotateX(${9 - y * 8}deg) rotateY(${-13 + x * 12}deg)`;
+                });
+                hero.addEventListener('mouseleave', () => {
+                    stack.style.transform = 'rotateX(9deg) rotateY(-13deg)';
+                });
+            }
+
+            document.querySelectorAll('.tilt-card').forEach((card) => {
+                card.addEventListener('mousemove', (event) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (event.clientX - rect.left) / rect.width - 0.5;
+                    const y = (event.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = `rotateX(${-y * 6}deg) rotateY(${x * 8}deg) translateY(-4px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
