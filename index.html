@@ -6,6 +6,9 @@
     <meta name="description" content="PontoCerto liga clientes a profissionais locais. Começamos por jardinagem, limpeza de terrenos, poda, abate e manutenção de espaços exteriores.">
     <title>PontoCerto - Serviços Locais, Começando por Espaços Exteriores</title>
 
+    <!-- Supabase CDN (O motor do Back-end) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -403,42 +406,13 @@
         }
 
         /* ===== Problem / Why ===== */
-        .why {
-          padding: 92px 0;
-          position: relative;
-        }
-        .why-grid {
-          display: grid;
-          grid-template-columns: 0.9fr 1.1fr;
-          gap: 34px;
-          align-items: stretch;
-        }
-        .why-panel {
-          border: 1px solid var(--line);
-          border-radius: 24px;
-          background: linear-gradient(145deg, rgba(247,244,236,0.95), rgba(239,234,219,0.72));
-          padding: 34px;
-          box-shadow: var(--shadow-soft);
-          transform-style: preserve-3d;
-        }
+        .why { padding: 92px 0; position: relative; }
+        .why-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 34px; align-items: stretch; }
+        .why-panel { border: 1px solid var(--line); border-radius: 24px; background: linear-gradient(145deg, rgba(247,244,236,0.95), rgba(239,234,219,0.72)); padding: 34px; box-shadow: var(--shadow-soft); transform-style: preserve-3d; }
         .why-panel h2 { font-size: 34px; margin-bottom: 18px; }
         .why-panel p { color: var(--ink-soft); margin-bottom: 18px; }
-        .feature-list {
-          list-style: none;
-          display: grid;
-          gap: 16px;
-        }
-        .feature-list li {
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-          padding: 18px;
-          border: 1px solid var(--line-soft);
-          border-radius: 18px;
-          background: rgba(255,255,255,0.27);
-          box-shadow: 0 12px 28px rgba(28,33,24,0.06);
-          transition: transform .18s ease, box-shadow .18s ease;
-        }
+        .feature-list { list-style: none; display: grid; gap: 16px; }
+        .feature-list li { display: flex; gap: 14px; align-items: flex-start; padding: 18px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,0.27); box-shadow: 0 12px 28px rgba(28,33,24,0.06); transition: transform .18s ease, box-shadow .18s ease; }
         .feature-list li:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(28,33,24,0.10); }
         .feature-list i { color: var(--sage-deep); margin-top: 4px; }
         .feature-list strong { display: block; margin-bottom: 3px; }
@@ -446,331 +420,96 @@
 
         /* ===== Gateways ===== */
         .gateways { padding: 0 0 100px; }
-        .gateway-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 24px;
-          perspective: 1100px;
-        }
-        .tilt-card {
-          transform-style: preserve-3d;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          will-change: transform;
-        }
+        .gateway-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; perspective: 1100px; }
+        .tilt-card { transform-style: preserve-3d; transition: transform 0.2s ease, box-shadow 0.2s ease; will-change: transform; }
         .tilt-card:hover { box-shadow: var(--shadow-3d); }
-        .gateway-card {
-          background: rgba(247,244,236,0.88);
-          border: 1px solid var(--line);
-          border-radius: 24px;
-          padding: 44px 40px;
-          position: relative;
-          overflow: hidden;
-        }
-        .gateway-card::after {
-          content: "";
-          position: absolute;
-          width: 220px;
-          height: 220px;
-          right: -90px;
-          top: -100px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(138,154,91,0.20), transparent 70%);
-          transform: translateZ(-1px);
-        }
-        .gateway-tag {
-          display: inline-block;
-          font-family: var(--font-mono);
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: var(--sage-deep);
-          margin-bottom: 18px;
-          position: relative;
-          z-index: 1;
-        }
-        .gateway-card h2 {
-          font-size: 30px;
-          line-height: 1.2;
-          margin-bottom: 16px;
-          position: relative;
-          z-index: 1;
-        }
-        .gateway-card > p {
-          font-size: 15.5px;
-          color: var(--ink-soft);
-          margin-bottom: 24px;
-          position: relative;
-          z-index: 1;
-        }
-        .gateway-card--alt {
-          background: linear-gradient(145deg, #222a1c, var(--ink));
-          border-color: rgba(247,244,236,0.08);
-        }
+        .gateway-card { background: rgba(247,244,236,0.88); border: 1px solid var(--line); border-radius: 24px; padding: 44px 40px; position: relative; overflow: hidden; }
+        .gateway-card::after { content: ""; position: absolute; width: 220px; height: 220px; right: -90px; top: -100px; border-radius: 50%; background: radial-gradient(circle, rgba(138,154,91,0.20), transparent 70%); transform: translateZ(-1px); }
+        .gateway-tag { display: inline-block; font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sage-deep); margin-bottom: 18px; position: relative; z-index: 1; }
+        .gateway-card h2 { font-size: 30px; line-height: 1.2; margin-bottom: 16px; position: relative; z-index: 1; }
+        .gateway-card > p { font-size: 15.5px; color: var(--ink-soft); margin-bottom: 24px; position: relative; z-index: 1; }
+        .gateway-card--alt { background: linear-gradient(145deg, #222a1c, var(--ink)); border-color: rgba(247,244,236,0.08); }
         .gateway-card--alt::after { background: radial-gradient(circle, rgba(184,137,94,0.22), transparent 70%); }
-        .gateway-card--alt h2,
-        .gateway-card--alt .gateway-tag { color: var(--cream); }
+        .gateway-card--alt h2, .gateway-card--alt .gateway-tag { color: var(--cream); }
         .gateway-card--alt p { color: rgba(247, 244, 236, 0.72); }
         .gateway-card--alt .gateway-list li { color: rgba(247, 244, 236, 0.85); }
         .gateway-card--alt .text-link { color: var(--clay); }
-        .gateway-list {
-          list-style: none;
-          margin-bottom: 28px;
-          position: relative;
-          z-index: 1;
-        }
-        .gateway-list li {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 14.5px;
-          color: var(--ink-soft);
-          padding: 7px 0;
-        }
+        .gateway-list { list-style: none; margin-bottom: 28px; position: relative; z-index: 1; }
+        .gateway-list li { display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--ink-soft); padding: 7px 0; }
         .gateway-list i { font-size: 17px; color: var(--clay); flex-shrink: 0; }
-        .text-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          font-weight: 700;
-          font-size: 15px;
-          color: var(--clay-deep);
-          transition: gap 0.15s ease;
-          position: relative;
-          z-index: 1;
-        }
+        .text-link { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; font-size: 15px; color: var(--clay-deep); transition: gap 0.15s ease; position: relative; z-index: 1; }
         .text-link:hover { gap: 11px; }
 
         /* ===== How it works ===== */
-        .how-it-works {
-          padding: 96px 0;
-          background: linear-gradient(180deg, var(--cream-deep), rgba(239,234,219,0.62));
-          border-top: 1px solid var(--line);
-          border-bottom: 1px solid var(--line);
-        }
-        .paths-grid {
-          display: grid;
-          grid-template-columns: 1fr auto 1fr;
-          gap: 0 56px;
-        }
-        .paths-divider {
-          width: 1px;
-          background: linear-gradient(180deg, transparent, var(--line), transparent);
-        }
-        .path-heading {
-          font-size: 21px;
-          margin-bottom: 32px;
-          color: var(--ink-soft);
-        }
-        .path-step {
-          display: flex;
-          gap: 18px;
-          margin-bottom: 24px;
-          position: relative;
-          padding: 18px;
-          border-radius: 18px;
-          background: rgba(247,244,236,0.50);
-          border: 1px solid rgba(28,33,24,0.06);
-          box-shadow: 0 11px 28px rgba(28,33,24,0.05);
-        }
+        .how-it-works { padding: 96px 0; background: linear-gradient(180deg, var(--cream-deep), rgba(239,234,219,0.62)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .paths-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0 56px; }
+        .paths-divider { width: 1px; background: linear-gradient(180deg, transparent, var(--line), transparent); }
+        .path-heading { font-size: 21px; margin-bottom: 32px; color: var(--ink-soft); }
+        .path-step { display: flex; gap: 18px; margin-bottom: 24px; position: relative; padding: 18px; border-radius: 18px; background: rgba(247,244,236,0.50); border: 1px solid rgba(28,33,24,0.06); box-shadow: 0 11px 28px rgba(28,33,24,0.05); }
         .path-step:last-child { margin-bottom: 0; }
-        .path-marker {
-          flex-shrink: 0;
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: var(--sage);
-          margin-top: 7px;
-          box-shadow: 0 0 0 8px rgba(138,154,91,0.14);
-        }
+        .path-marker { flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--sage); margin-top: 7px; box-shadow: 0 0 0 8px rgba(138,154,91,0.14); }
         .path-marker--alt { background: var(--clay); box-shadow: 0 0 0 8px rgba(184,137,94,0.14); }
         .path-step h4 { font-size: 16.5px; margin-bottom: 6px; }
         .path-step p { font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
 
         /* ===== Services ===== */
         .services { padding: 100px 0; }
-        .services-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
-          perspective: 1000px;
-        }
-        .service-card {
-          background: rgba(247,244,236,0.86);
-          border: 1px solid var(--line);
-          border-radius: 22px;
-          padding: 34px 30px;
-          transform-style: preserve-3d;
-          box-shadow: 0 16px 34px rgba(28,33,24,0.06);
-          transition: transform .2s ease, box-shadow .2s ease;
-        }
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; perspective: 1000px; }
+        .service-card { background: rgba(247,244,236,0.86); border: 1px solid var(--line); border-radius: 22px; padding: 34px 30px; transform-style: preserve-3d; box-shadow: 0 16px 34px rgba(28,33,24,0.06); transition: transform .2s ease, box-shadow .2s ease; }
         .service-card:hover { transform: translateY(-8px) rotateX(2deg); box-shadow: var(--shadow-soft); }
-        .service-card i {
-          font-size: 24px;
-          color: var(--sage-deep);
-          margin-bottom: 18px;
-          display: grid;
-          place-items: center;
-          width: 48px;
-          height: 48px;
-          border-radius: 16px;
-          background: rgba(138,154,91,0.13);
-          transform: translateZ(24px);
-        }
+        .service-card i { font-size: 24px; color: var(--sage-deep); margin-bottom: 18px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: rgba(138,154,91,0.13); transform: translateZ(24px); }
         .service-card h3 { font-size: 18px; margin-bottom: 8px; }
         .service-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
 
         /* ===== Soon ===== */
-        .soon {
-          padding: 92px 0;
-          background: var(--cream-deep);
-          border-top: 1px solid var(--line);
-          border-bottom: 1px solid var(--line);
-        }
-        .soon-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 14px;
-        }
-        .soon-item {
-          padding: 22px;
-          border: 1px dashed rgba(28,33,24,0.18);
-          border-radius: 20px;
-          background: rgba(247,244,236,0.55);
-          color: var(--ink-soft);
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
+        .soon { padding: 92px 0; background: var(--cream-deep); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .soon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .soon-item { padding: 22px; border: 1px dashed rgba(28,33,24,0.18); border-radius: 20px; background: rgba(247,244,236,0.55); color: var(--ink-soft); display: flex; align-items: center; gap: 12px; }
         .soon-item i { color: var(--clay-deep); }
 
+        /* ===== Formulário de Pedido (Adicionado) ===== */
+        .pedido-section { padding: 96px 0; position: relative; }
+        .form-wrapper { max-width: 640px; margin: 0 auto; background: rgba(247,244,236,0.95); border: 1px solid var(--line); border-radius: 24px; padding: 44px; box-shadow: var(--shadow-3d); }
+        .form-wrapper h3 { font-size: 28px; margin-bottom: 24px; text-align: center; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-weight: 600; font-size: 14.5px; color: var(--ink); margin-bottom: 8px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 14px 18px; border: 1px solid var(--line-soft); border-radius: 12px; font-family: var(--font-body); font-size: 15px; background: white; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--sage-deep); box-shadow: 0 0 0 4px rgba(138,154,91,0.1); }
+
         /* ===== Final CTA ===== */
-        .final-cta {
-          padding: 110px 0 120px;
-          background:
-            radial-gradient(circle at 50% 0%, rgba(184,137,94,0.20), transparent 38%),
-            linear-gradient(145deg, #20271b, var(--ink));
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-        }
-        .final-cta::before {
-          content: "";
-          position: absolute;
-          inset: auto -10% -55% -10%;
-          height: 320px;
-          background: radial-gradient(ellipse, rgba(138,154,91,0.16), transparent 68%);
-        }
+        .final-cta { padding: 110px 0 120px; background: radial-gradient(circle at 50% 0%, rgba(184,137,94,0.20), transparent 38%), linear-gradient(145deg, #20271b, var(--ink)); text-align: center; position: relative; overflow: hidden; }
+        .final-cta::before { content: ""; position: absolute; inset: auto -10% -55% -10%; height: 320px; background: radial-gradient(ellipse, rgba(138,154,91,0.16), transparent 68%); }
         .final-cta-inner { position: relative; z-index: 1; }
-        .final-cta-inner h2 {
-          font-size: clamp(34px, 4vw, 48px);
-          color: var(--cream);
-          margin-bottom: 16px;
-        }
-        .final-cta-inner > p {
-          font-size: 17px;
-          color: rgba(247, 244, 236, 0.74);
-          margin: 0 auto 40px;
-          max-width: 660px;
-        }
-        .final-cta .btn-primary {
-          background: linear-gradient(145deg, var(--clay), #d3a06d);
-          color: var(--ink);
-        }
+        .final-cta-inner h2 { font-size: clamp(34px, 4vw, 48px); color: var(--cream); margin-bottom: 16px; }
+        .final-cta-inner > p { font-size: 17px; color: rgba(247, 244, 236, 0.74); margin: 0 auto 40px; max-width: 660px; }
+        .final-cta .btn-primary { background: linear-gradient(145deg, var(--clay), #d3a06d); color: var(--ink); }
         .final-cta .btn-primary:hover { background: linear-gradient(145deg, #cc9a6c, var(--clay)); }
-        .final-cta .btn-secondary {
-          border-color: rgba(247, 244, 236, 0.28);
-          color: var(--cream);
-          background: rgba(247,244,236,0.05);
-        }
+        .final-cta .btn-secondary { border-color: rgba(247, 244, 236, 0.28); color: var(--cream); background: rgba(247,244,236,0.05); }
         .final-cta .btn-secondary:hover { background: rgba(247, 244, 236, 0.10); }
 
         /* ===== Footer ===== */
-        .site-footer {
-          background: var(--cream-deep);
-          border-top: 1px solid var(--line);
-          padding: 72px 0 28px;
-        }
-        .footer-inner {
-          display: flex;
-          justify-content: space-between;
-          gap: 64px;
-          margin-bottom: 56px;
-        }
+        .site-footer { background: var(--cream-deep); border-top: 1px solid var(--line); padding: 72px 0 28px; }
+        .footer-inner { display: flex; justify-content: space-between; gap: 64px; margin-bottom: 56px; }
         .footer-brand .logo { margin-bottom: 12px; }
         .footer-brand p { font-size: 14px; color: var(--ink-soft); max-width: 300px; }
         .footer-links { display: flex; gap: 64px; }
-        .footer-links h4 {
-          font-family: var(--font-body);
-          font-size: 13px;
-          text-transform: uppercase;
-          letter-spacing: 0.03em;
-          color: var(--ink-soft);
-          margin-bottom: 16px;
-          font-weight: 700;
-        }
-        .footer-links a {
-          display: block;
-          font-size: 14.5px;
-          color: var(--ink-soft);
-          padding: 6px 0;
-          transition: color 0.15s ease, transform 0.15s ease;
-        }
+        .footer-links h4 { font-family: var(--font-body); font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-soft); margin-bottom: 16px; font-weight: 700; }
+        .footer-links a { display: block; font-size: 14.5px; color: var(--ink-soft); padding: 6px 0; transition: color 0.15s ease, transform 0.15s ease; }
         .footer-links a:hover { color: var(--ink); transform: translateX(2px); }
         .footer-bottom { border-top: 1px solid var(--line); padding-top: 24px; }
         .footer-bottom p { font-size: 13px; color: var(--ink-soft); }
 
         /* ===== Animations ===== */
-        @keyframes floatOrb {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(18px, -22px, 0) scale(1.04); }
-        }
-        @keyframes floatCard {
-          0%, 100% { translate: 0 0; }
-          50% { translate: 0 -12px; }
-        }
-        @keyframes pulseDot {
-          0%, 100% { transform: scale(1); opacity: .75; }
-          50% { transform: scale(1.45); opacity: 1; }
-        }
+        @keyframes floatOrb { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(18px, -22px, 0) scale(1.04); } }
+        @keyframes floatCard { 0%, 100% { translate: 0 0; } 50% { translate: 0 -12px; } }
+        @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: .75; } 50% { transform: scale(1.45); opacity: 1; } }
 
         /* ===== Responsive ===== */
-        @media (max-width: 980px) {
-          .hero-layout { grid-template-columns: 1fr; }
-          .hero-visual { min-height: 360px; max-width: 500px; }
-          .why-grid { grid-template-columns: 1fr; }
-          .soon-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 860px) {
-          .main-nav { display: none; }
-          .hero { padding-top: 78px; }
-          .gateway-grid { grid-template-columns: 1fr; }
-          .paths-grid { grid-template-columns: 1fr; gap: 40px; }
-          .paths-divider { display: none; }
-          .services-grid { grid-template-columns: 1fr; }
-          .footer-inner { flex-direction: column; gap: 40px; }
-          .footer-links { flex-wrap: wrap; gap: 32px; }
-          .hero-actions { flex-direction: column; }
-          .hero-actions .btn { width: 100%; }
-          .floating-card { width: 280px; }
-          .floating-card--main { left: 16px; }
-          .floating-card--dark { right: 10px; }
-        }
-        @media (max-width: 560px) {
-          .container { padding: 0 20px; }
-          .header-inner { height: 68px; }
-          .btn-small { padding: 9px 13px; }
-          .hero-visual { min-height: 300px; transform: scale(.88); transform-origin: left top; }
-          .soon-grid { grid-template-columns: 1fr; }
-          .footer-links { flex-direction: column; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          html { scroll-behavior: auto; }
-          *, *::before, *::after { transition: none !important; animation: none !important; }
-        }
-        a:focus-visible, button:focus-visible {
-          outline: 2px solid var(--sage-deep);
-          outline-offset: 3px;
-        }
+        @media (max-width: 980px) { .hero-layout { grid-template-columns: 1fr; } .hero-visual { min-height: 360px; max-width: 500px; } .why-grid { grid-template-columns: 1fr; } .soon-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 860px) { .main-nav { display: none; } .hero { padding-top: 78px; } .gateway-grid { grid-template-columns: 1fr; } .paths-grid { grid-template-columns: 1fr; gap: 40px; } .paths-divider { display: none; } .services-grid { grid-template-columns: 1fr; } .footer-inner { flex-direction: column; gap: 40px; } .footer-links { flex-wrap: wrap; gap: 32px; } .hero-actions { flex-direction: column; } .hero-actions .btn { width: 100%; } .floating-card { width: 280px; } .floating-card--main { left: 16px; } .floating-card--dark { right: 10px; } }
+        @media (max-width: 560px) { .container { padding: 0 20px; } .header-inner { height: 68px; } .btn-small { padding: 9px 13px; } .hero-visual { min-height: 300px; transform: scale(.88); transform-origin: left top; } .soon-grid { grid-template-columns: 1fr; } .footer-links { flex-direction: column; } .form-wrapper { padding: 24px; } }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+        a:focus-visible, button:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 3px; }
     </style>
 </head>
 <body>
@@ -786,9 +525,8 @@
                 <a href="#porque">Porquê</a>
                 <a href="#servicos">Serviços</a>
                 <a href="#como-funciona">Como funciona</a>
-                <a href="#em-breve">Em breve</a>
             </nav>
-            <a href="#pedir" class="btn btn-primary btn-small">Pedir serviço</a>
+            <a href="#pedir-servico" class="btn btn-primary btn-small">Pedir serviço</a>
         </div>
     </header>
 
@@ -817,12 +555,12 @@
                 <h1>Encontre profissionais locais para tratar do que precisa.</h1>
                 <p class="hero-lead">A PontoCerto liga clientes a profissionais de confiança. Começamos pela jardinagem e limpeza de terrenos — para pedir orçamentos, comparar propostas e contratar alguém perto de si de forma simples.</p>
                 <div class="hero-actions">
-                    <a href="#pedir" class="btn btn-primary btn-large">Preciso de um profissional <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#pedir-servico" class="btn btn-primary btn-large">Preciso de um profissional <i class="fa-solid fa-arrow-right"></i></a>
                     <a href="#profissionais" class="btn btn-secondary btn-large">Sou profissional</a>
                 </div>
                 <div class="hero-trust">
                     <i class="fa-solid fa-seedling"></i>
-                    <span><strong>Projeto em lançamento:</strong> estamos a criar a primeira rede de profissionais parceiros.</span>
+                    <span><strong>Projeto em lançamento:</strong> estamos a criar a primeira rede de parceiros.</span>
                 </div>
             </div>
 
@@ -857,13 +595,11 @@
                 <div class="section-eyebrow">Porque existimos</div>
                 <h2>Contratar serviços locais ainda é demasiado difícil.</h2>
                 <p>Entre pedir contactos, esperar respostas, comparar preços sem referência e não saber em quem confiar, um serviço simples pode tornar-se complicado.</p>
-                <p>A PontoCerto quer resolver isso com pedidos claros, profissionais por zona e propostas fáceis de comparar.</p>
             </div>
             <ul class="feature-list">
-                <li><i class="fa-solid fa-bullseye"></i><div><strong>Pedidos objetivos</strong><span>O cliente explica o que precisa, envia fotos e recebe respostas mais alinhadas.</span></div></li>
+                <li><i class="fa-solid fa-bullseye"></i><div><strong>Pedidos objetivos</strong><span>O cliente explica o que precisa e recebe respostas mais alinhadas.</span></div></li>
                 <li><i class="fa-solid fa-location-crosshairs"></i><div><strong>Profissionais próximos</strong><span>O foco é ligar pessoas a prestadores que já trabalham na sua área.</span></div></li>
-                <li><i class="fa-solid fa-scale-balanced"></i><div><strong>Comparação simples</strong><span>Orçamentos, disponibilidade e detalhes do serviço reunidos num só lugar.</span></div></li>
-                <li><i class="fa-solid fa-layer-group"></i><div><strong>Começar pequeno, crescer bem</strong><span>Primeiro espaços exteriores; depois novas categorias de serviços locais.</span></div></li>
+                <li><i class="fa-solid fa-scale-balanced"></i><div><strong>Comparação simples</strong><span>Orçamentos e disponibilidade reunidos num só lugar.</span></div></li>
             </ul>
         </div>
     </section>
@@ -873,8 +609,6 @@
         <div class="container">
             <div class="section-eyebrow">Primeira categoria</div>
             <h2 class="section-title">Começamos pelos espaços exteriores.</h2>
-            <p class="section-lead">Jardinagem, limpeza de terrenos, poda, abate e manutenção — serviços onde a proximidade, a rapidez e a confiança fazem toda a diferença.</p>
-
             <div class="gateway-grid">
                 <div class="gateway-card tilt-card">
                     <span class="gateway-tag">Para particulares e condomínios</span>
@@ -883,9 +617,8 @@
                     <ul class="gateway-list">
                         <li><i class="fa-solid fa-check"></i> Corte de relva e sebes</li>
                         <li><i class="fa-solid fa-check"></i> Poda de árvores e arbustos</li>
-                        <li><i class="fa-solid fa-check"></i> Tratamento, plantação e manutenção</li>
                     </ul>
-                    <a href="#pedir" class="text-link">Pedir serviço de jardinagem <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#pedir-servico" class="text-link">Pedir serviço de jardinagem <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
                 <div class="gateway-card gateway-card--alt tilt-card">
@@ -895,9 +628,8 @@
                     <ul class="gateway-list">
                         <li><i class="fa-solid fa-fire-extinguisher"></i> Limpeza preventiva de terrenos</li>
                         <li><i class="fa-solid fa-tractor"></i> Desmatação e roço de mato</li>
-                        <li><i class="fa-solid fa-truck"></i> Remoção de entulho verde</li>
                     </ul>
-                    <a href="#pedir" class="text-link">Pedir limpeza de terreno <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#pedir-servico" class="text-link">Pedir limpeza de terreno <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -908,102 +640,49 @@
         <div class="container">
             <div class="section-eyebrow">Simples e transparente</div>
             <h2 class="section-title">Como funciona a PontoCerto?</h2>
-            <p class="section-lead">A plataforma foi pensada para servir os dois lados: quem precisa de resolver um problema e quem quer receber trabalhos na sua zona.</p>
-
             <div class="paths-grid">
-                <div id="pedir">
+                <div id="clientes-passos">
                     <h3 class="path-heading">Para clientes</h3>
-                    <div class="path-step">
-                        <div class="path-marker"></div>
-                        <div>
-                            <h4>1. Faça o seu pedido</h4>
-                            <p>Descreva o serviço, indique a zona, estime a dimensão e adicione fotos se tiver.</p>
-                        </div>
-                    </div>
-                    <div class="path-step">
-                        <div class="path-marker"></div>
-                        <div>
-                            <h4>2. Receba propostas</h4>
-                            <p>Profissionais disponíveis analisam o pedido e enviam orçamento ou pedido de detalhes.</p>
-                        </div>
-                    </div>
-                    <div class="path-step">
-                        <div class="path-marker"></div>
-                        <div>
-                            <h4>3. Escolha com confiança</h4>
-                            <p>Compare respostas, combine a data e avance com o profissional que fizer mais sentido.</p>
-                        </div>
-                    </div>
+                    <div class="path-step"><div class="path-marker"></div><div><h4>1. Faça o seu pedido</h4><p>Descreva o serviço e indique a zona.</p></div></div>
+                    <div class="path-step"><div class="path-marker"></div><div><h4>2. Receba propostas</h4><p>Profissionais disponíveis enviam orçamentos.</p></div></div>
                 </div>
-
                 <div class="paths-divider"></div>
-
                 <div id="profissionais">
                     <h3 class="path-heading">Para profissionais</h3>
-                    <div class="path-step">
-                        <div class="path-marker path-marker--alt"></div>
-                        <div>
-                            <h4>1. Registe o seu perfil</h4>
-                            <p>Indique serviços, zonas de atuação, disponibilidade e experiência.</p>
-                        </div>
-                    </div>
-                    <div class="path-step">
-                        <div class="path-marker path-marker--alt"></div>
-                        <div>
-                            <h4>2. Receba pedidos próximos</h4>
-                            <p>Veja oportunidades da sua área e envie orçamento apenas quando lhe interessar.</p>
-                        </div>
-                    </div>
-                    <div class="path-step">
-                        <div class="path-marker path-marker--alt"></div>
-                        <div>
-                            <h4>3. Ganhe novos clientes</h4>
-                            <p>Construa reputação local e aumente os rendimentos com trabalhos bem definidos.</p>
-                        </div>
-                    </div>
+                    <div class="path-step"><div class="path-marker path-marker--alt"></div><div><h4>1. Registe o seu perfil</h4><p>Indique serviços e zonas de atuação.</p></div></div>
+                    <div class="path-step"><div class="path-marker path-marker--alt"></div><div><h4>2. Receba pedidos</h4><p>Envie orçamento apenas quando lhe interessar.</p></div></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== OUTROS SERVIÇOS ===== -->
-    <section class="services">
+    <!-- ===== FORMULÁRIO DE PEDIDO LIGADO AO SUPABASE ===== -->
+    <section class="pedido-section" id="pedir-servico">
         <div class="container">
-            <div class="section-eyebrow">Serviços iniciais</div>
-            <h2 class="section-title">Tudo o que o seu espaço exterior precisa.</h2>
-            <p class="section-lead">A primeira versão da PontoCerto foca-se em serviços com procura local clara e execução presencial.</p>
-
-            <div class="services-grid">
-                <div class="service-card tilt-card">
-                    <i class="fa-solid fa-scissors"></i>
-                    <h3>Manutenção regular</h3>
-                    <p>Visitas semanais, quinzenais ou mensais para manter jardins organizados e saudáveis.</p>
-                </div>
-                <div class="service-card tilt-card">
-                    <i class="fa-solid fa-tree"></i>
-                    <h3>Poda e abate</h3>
-                    <p>Intervenções em árvores, arbustos e sebes com equipamento adequado ao trabalho.</p>
-                </div>
-                <div class="service-card tilt-card">
-                    <i class="fa-solid fa-seedling"></i>
-                    <h3>Tratamento e limpeza</h3>
-                    <p>Controlo de vegetação, preparação de terrenos e remoção de resíduos verdes.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== EM BREVE ===== -->
-    <section class="soon" id="em-breve">
-        <div class="container">
-            <div class="section-eyebrow">Visão da plataforma</div>
-            <h2 class="section-title">Hoje espaços exteriores. Amanhã mais serviços locais.</h2>
-            <p class="section-lead">A PontoCerto nasce com um foco claro, mas foi pensada para crescer por categorias à medida que a rede de profissionais aumenta.</p>
-            <div class="soon-grid">
-                <div class="soon-item"><i class="fa-solid fa-paint-roller"></i> Pintura</div>
-                <div class="soon-item"><i class="fa-solid fa-screwdriver-wrench"></i> Pequenas reparações</div>
-                <div class="soon-item"><i class="fa-solid fa-broom"></i> Limpezas</div>
-                <div class="soon-item"><i class="fa-solid fa-water-ladder"></i> Piscinas</div>
+            <div class="section-eyebrow" style="text-align: center;">Simular Pedido</div>
+            <div class="form-wrapper tilt-card">
+                <h3>Faça o seu pedido</h3>
+                <form id="form-pedido" onsubmit="enviarPedido(event)">
+                    <div class="form-group">
+                        <label>O que precisa? (Título)</label>
+                        <input type="text" id="txt_titulo" placeholder="Ex: Limpeza de terreno de 400m2" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Serviço</label>
+                        <select id="sel_tipo">
+                            <option value="Limpeza de Terreno">Limpeza de Terreno</option>
+                            <option value="Jardinagem Geral">Jardinagem Geral</option>
+                            <option value="Poda / Abate">Poda / Abate de Árvores</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Explique os detalhes (Descrição)</label>
+                        <textarea id="txt_descricao" rows="4" placeholder="Ex: Preciso que cortem as silvas e limpem o entulho antes do verão." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large" style="width: 100%; margin-top: 10px;">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados
+                    </button>
+                </form>
             </div>
         </div>
     </section>
@@ -1013,9 +692,9 @@
         <div class="container">
             <div class="final-cta-inner">
                 <h2>Quer fazer parte da fase inicial?</h2>
-                <p>Estamos a construir a rede de clientes e profissionais da PontoCerto. Se precisa de um serviço ou presta serviços exteriores, este é o momento certo para entrar.</p>
+                <p>Estamos a construir a rede de clientes e profissionais da PontoCerto.</p>
                 <div class="hero-actions hero-actions--center">
-                    <a href="#pedir" class="btn btn-primary btn-large">Pedir orçamento grátis</a>
+                    <a href="#pedir-servico" class="btn btn-primary btn-large">Pedir orçamento grátis</a>
                     <a href="#profissionais" class="btn btn-secondary btn-large">Registar como profissional</a>
                 </div>
             </div>
@@ -1027,40 +706,61 @@
         <div class="container">
             <div class="footer-inner">
                 <div class="footer-brand">
-                    <div class="logo">
-                        <i class="fa-solid fa-location-dot"></i> PontoCerto
-                    </div>
-                    <p>O profissional certo, no momento certo. Começamos por ligar pessoas a serviços de espaços exteriores.</p>
+                    <div class="logo"><i class="fa-solid fa-location-dot"></i> PontoCerto</div>
+                    <p>O profissional certo, no momento certo.</p>
                 </div>
                 <div class="footer-links">
-                    <div>
-                        <h4>Serviços</h4>
-                        <a href="#servicos">Jardinagem</a>
-                        <a href="#servicos">Limpeza de terrenos</a>
-                        <a href="#servicos">Poda e abate</a>
-                    </div>
-                    <div>
-                        <h4>Plataforma</h4>
-                        <a href="#como-funciona">Como funciona</a>
-                        <a href="#profissionais">Torne-se profissional</a>
-                        <a href="#em-breve">Novas categorias</a>
-                    </div>
-                    <div>
-                        <h4>Legal</h4>
-                        <a href="#">Termos e condições</a>
-                        <a href="#">Privacidade</a>
-                        <a href="#">Contactos</a>
-                    </div>
+                    <div><h4>Serviços</h4><a href="#servicos">Jardinagem</a><a href="#servicos">Limpeza</a></div>
+                    <div><h4>Plataforma</h4><a href="#como-funciona">Como funciona</a><a href="#profissionais">Profissionais</a></div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 PontoCerto. Todos os direitos reservados.</p>
-            </div>
+            <div class="footer-bottom"><p>&copy; 2026 PontoCerto. Todos os direitos reservados.</p></div>
         </div>
     </footer>
 
+    <!-- LÓGICA DO SUPABASE E ANIMAÇÕES -->
     <script>
-        // Efeito 3D subtil no hero e nos cartões. Desliga automaticamente em dispositivos que preferem menos movimento.
+        // ==========================================
+        // ⚠️ SUBSTITUI AQUI AS TUAS CHAVES SUPABASE
+        // ==========================================
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co/rest/v1/'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+
+        // Inicializar a ligação ao Supabase
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Função para enviar os dados
+        async function enviarPedido(event) {
+            event.preventDefault(); // Impede a página de recarregar
+
+            // Apanhar os valores do formulário
+            const tituloInput = document.getElementById('txt_titulo').value;
+            const descricaoInput = document.getElementById('txt_descricao').value;
+            const tipoInput = document.getElementById('sel_tipo').value;
+
+            // Enviar para a tabela "pedidos"
+            const { data, error } = await supabase
+                .from('pedidos')
+                .insert([
+                    { 
+                        titulo: tituloInput, 
+                        descricao: descricaoInput, 
+                        tipo_servico: tipoInput 
+                    }
+                ]);
+
+            if (error) {
+                console.error('Erro:', error);
+                alert('Ocorreu um erro ao enviar o pedido.');
+            } else {
+                alert('Sucesso! O pedido foi guardado na tua Base de Dados! 🎉');
+                document.getElementById('form-pedido').reset();
+            }
+        }
+
+        // ==========================================
+        // Efeito 3D subtil (O teu código original)
+        // ==========================================
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (!prefersReducedMotion) {
