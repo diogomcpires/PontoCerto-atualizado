@@ -85,7 +85,8 @@
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co/rest/v1/'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // 🛠️ Nome corrigido para "baseDados" para evitar o erro da Consola
+        const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function enviarPedido(event) {
             event.preventDefault();
@@ -93,15 +94,17 @@
             const descricaoInput = document.getElementById('txt_descricao').value;
             const tipoInput = document.getElementById('sel_tipo').value;
 
-            const { data, error } = await supabase.from('pedidos').insert([
+            // 🛠️ Usamos o "baseDados" para guardar as informações
+            const { data, error } = await baseDados.from('pedidos').insert([
                 { titulo: tituloInput, descricao: descricaoInput, tipo_servico: tipoInput }
             ]);
 
             if (error) {
-                alert('Erro ao enviar pedido.');
+                console.error("Erro do Supabase:", error);
+                alert('Erro ao enviar pedido. Verifica a consola.');
             } else {
                 alert('Sucesso! O pedido foi guardado na tua Base de Dados! 🎉');
-                document.getElementById('form-pedido').reset();
+                document.getElementById('form-pedido').reset(); // Limpa o formulário depois de enviar
             }
         }
     </script>
