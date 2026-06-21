@@ -118,13 +118,24 @@
             });
         }
 
-        // Função vazia por agora, para o botão "Aceitar"
-        function aceitarTrabalho(id) {
-            alert("Em breve, este botão vai alterar o pedido #" + id + " no Supabase!");
-        }
+// Substitui a tua função antiga por esta:
+async function aceitarTrabalho(id) {
+    const botao = event.target;
+    botao.textContent = "A aceitar...";
+    botao.disabled = true;
 
-        // Executar a função mal a página abre
-        carregarTrabalhos();
-    </script>
-</body>
-</html>
+    // Comando para atualizar o estado no Supabase
+    const { data, error } = await baseDados
+        .from('pedidos')
+        .update({ estado: 'aceite' }) // Certifica-te que a coluna se chama 'estado'
+        .eq('id', id);
+
+    if (error) {
+        alert("Erro ao aceitar trabalho: " + error.message);
+        botao.textContent = "Aceitar Trabalho";
+        botao.disabled = false;
+    } else {
+        alert("Trabalho aceite com sucesso! 🎉");
+        carregarTrabalhos(); // Recarrega a lista para o cartão mudar de estado
+    }
+}
