@@ -3,22 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área de Profissionais - PontoCerto</title>
+    <title>Painel de Trabalhos - PontoCerto</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --ink: #1C2118; --cream: #F7F4EC; --font-display: "Fraunces", Georgia, serif; --font-body: "Inter", sans-serif; }
-        body { font-family: var(--font-body); background: var(--ink); color: var(--cream); text-align: center; padding: 100px 20px; }
-        h1 { font-family: var(--font-display); font-size: 40px; margin-bottom: 20px; }
-        p { font-size: 18px; color: rgba(247, 244, 236, 0.7); max-width: 500px; margin: 0 auto 30px; }
-        a { color: var(--ink); background: var(--cream); padding: 15px 30px; border-radius: 999px; text-decoration: none; font-weight: bold; }
+        :root { 
+            --ink: #1C2118; --ink-light: #2A3224; --cream: #F7F4EC; 
+            --sage: #8A9A5B; --clay: #B8895E;
+            --font-display: "Fraunces", Georgia, serif; 
+            --font-body: "Inter", sans-serif; 
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background: var(--ink); color: var(--cream); line-height: 1.6; padding: 40px 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        .header-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid rgba(247, 244, 236, 0.1); padding-bottom: 20px; }
+        .header-painel h1 { font-family: var(--font-display); font-size: 32px; color: var(--clay); }
+        .btn-voltar { color: var(--cream); text-decoration: none; font-size: 14px; opacity: 0.8; transition: opacity 0.2s; }
+        .btn-voltar:hover { opacity: 1; }
+
+        .estado-carregamento { text-align: center; padding: 50px; font-size: 18px; opacity: 0.7; }
+
+        /* Grelha de Trabalhos */
+        .grid-trabalhos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        
+        /* Cartão de Trabalho */
+        .cartao-trabalho { background: var(--ink-light); border: 1px solid rgba(247, 244, 236, 0.1); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .cartao-trabalho:hover { transform: translateY(-4px); border-color: rgba(247, 244, 236, 0.3); }
+        
+        .cartao-topo { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .tag-tipo { background: rgba(138, 154, 91, 0.2); color: var(--sage); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-estado { color: #B8895E; font-size: 12px; font-family: 'Space Mono', monospace; }
+        
+        .cartao-trabalho h3 { font-family: var(--font-display); font-size: 22px; margin-bottom: 8px; }
+        .cartao-trabalho p { font-size: 15px; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; }
+        
+        .btn-aceitar { background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-size: 15px; width: 100%; }
+        .btn-aceitar:hover { background: #9db267; }
     </style>
 </head>
 <body>
-    <i class="fa-solid fa-person-digging" style="font-size: 60px; margin-bottom: 30px; color: #B8895E;"></i>
-    <h1>Área de Profissionais</h1>
-    <p>Estamos a preparar o portal onde poderás aceitar os trabalhos de limpeza e jardinagem da tua zona. O registo abre muito em breve!</p>
-    <a href="index.html">Voltar à Página Inicial</a>
+
+    <div class="container">
+        <header class="header-painel">
+            <h1><i class="fa-solid fa-person-digging"></i> Trabalhos Disponíveis</h1>
+            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Sair do Painel</a>
+        </header>
+
+        <div id="lista-trabalhos" class="grid-trabalhos">
+            <div class="estado-carregamento">A procurar trabalhos na tua zona... <i class="fa-solid fa-spinner fa-spin"></i></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // LIGAÇÃO AO SUPABASE
+        // ==========================================
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+        
+        const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ==========================================
+        // FUNÇÃO PARA LER OS PEDIDOS
+        // ==========================================
+        async function carregarTrabalhos() {
+            const listaDiv = document.getElementById('lista-trabalhos');
+
+            // Fazer a pergunta (SELECT) à tabela 'pedidos'
+            // O .order('id', { ascending: false }) faz com que os mais recentes apareçam primeiro
+            const { data: pedidos, error } = await baseDados
+                .from('pedidos')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error("Erro ao ler dados:", error);
+                listaDiv.innerHTML = '<div class="estado-carregamento">Ocorreu um erro a ler os trabalhos.</div>';
+                return;
+            }
+
+            // Se não houver pedidos na tabela
+            if (pedidos.length === 0) {
+                listaDiv.innerHTML = '<div class="estado-carregamento">Ainda não há trabalhos disponíveis.</div>';
+                return;
+            }
+
+            // Limpar a mensagem de "A procurar..."
+            listaDiv.innerHTML = '';
+
+            // Desenhar um cartão para cada pedido que veio da base de dados
+            pedidos.forEach(pedido => {
+                const cartao = `
+                    <div class="cartao-trabalho">
+                        <div class="cartao-topo">
+                            <span class="tag-tipo">${pedido.tipo_servico || 'Serviço'}</span>
+                            <span class="tag-estado">⏳ PENDENTE</span>
+                        </div>
+                        <h3>${pedido.titulo}</h3>
+                        <p>${pedido.descricao}</p>
+                        <button class="btn-aceitar" onclick="aceitarTrabalho(${pedido.id})">
+                            Aceitar Trabalho
+                        </button>
+                    </div>
+                `;
+                listaDiv.innerHTML += cartao;
+            });
+        }
+
+        // Função vazia por agora, para o botão "Aceitar"
+        function aceitarTrabalho(id) {
+            alert("Em breve, este botão vai alterar o pedido #" + id + " no Supabase!");
+        }
+
+        // Executar a função mal a página abre
+        carregarTrabalhos();
+    </script>
 </body>
 </html>
