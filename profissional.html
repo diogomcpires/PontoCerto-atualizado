@@ -41,12 +41,14 @@
         .cartao-topo { display: flex; justify-content: space-between; margin-bottom: 16px; }
         .tag-tipo { background: rgba(138, 154, 91, 0.2); color: var(--sage); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .tag-estado { color: #B8895E; font-size: 12px; font-family: 'Space Mono', monospace; }
+        .tag-estado.aceite { color: var(--sage); } /* Cor verde quando está aceite */
         
         .cartao-trabalho h3 { font-family: var(--font-display); font-size: 22px; margin-bottom: 8px; }
         .cartao-trabalho p { font-size: 15px; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; }
         
         .btn-aceitar { background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-size: 15px; width: 100%; }
         .btn-aceitar:hover { background: #9db267; }
+        .btn-aceite { background: #3D4A2E; color: white; opacity: 0.8; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -70,7 +72,6 @@
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
 
         // ==========================================
         // FUNÇÃO PARA LER OS PEDIDOS
@@ -78,8 +79,6 @@
         async function carregarTrabalhos() {
             const listaDiv = document.getElementById('lista-trabalhos');
 
-            // Fazer a pergunta (SELECT) à tabela 'pedidos'
-            // O .order('id', { ascending: false }) faz com que os mais recentes apareçam primeiro
             const { data: pedidos, error } = await baseDados
                 .from('pedidos')
                 .select('*')
@@ -91,52 +90,63 @@
                 return;
             }
 
-            // Se não houver pedidos na tabela
             if (pedidos.length === 0) {
                 listaDiv.innerHTML = '<div class="estado-carregamento">Ainda não há trabalhos disponíveis.</div>';
                 return;
             }
 
-            // Limpar a mensagem de "A procurar..."
             listaDiv.innerHTML = '';
 
-            // Desenhar um cartão para cada pedido que veio da base de dados
             pedidos.forEach(pedido => {
+                // Verificar se o pedido já foi aceite
+                const estadoAtual = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
+                const isAceite = estadoAtual === 'ACEITE';
+                
+                // Mudar o botão se já estiver aceite
+                const htmlBotao = isAceite 
+                    ? `<button class="btn-aceitar btn-aceite" disabled><i class="fa-solid fa-check"></i> Trabalho Aceite</button>` 
+                    : `<button class="btn-aceitar" onclick="aceitarTrabalho(event, ${pedido.id})">Aceitar Trabalho</button>`;
+
                 const cartao = `
                     <div class="cartao-trabalho">
                         <div class="cartao-topo">
                             <span class="tag-tipo">${pedido.tipo_servico || 'Serviço'}</span>
-                            <span class="tag-estado">⏳ PENDENTE</span>
+                            <span class="tag-estado ${isAceite ? 'aceite' : ''}">${isAceite ? '✓ ACEITE' : '⏳ PENDENTE'}</span>
                         </div>
                         <h3>${pedido.titulo}</h3>
                         <p>${pedido.descricao}</p>
-                        <button class="btn-aceitar" onclick="aceitarTrabalho(${pedido.id})">
-                            Aceitar Trabalho
-                        </button>
+                        ${htmlBotao}
                     </div>
                 `;
                 listaDiv.innerHTML += cartao;
             });
         }
 
-// Substitui a tua função antiga por esta:
-async function aceitarTrabalho(id) {
-    const botao = event.target;
-    botao.textContent = "A aceitar...";
-    botao.disabled = true;
+        // ==========================================
+        // FUNÇÃO PARA ACEITAR O TRABALHO (UPDATE)
+        // ==========================================
+        async function aceitarTrabalho(event, id) {
+            const botao = event.target;
+            botao.textContent = "A aceitar...";
+            botao.disabled = true;
 
-    // Comando para atualizar o estado no Supabase
-    const { data, error } = await baseDados
-        .from('pedidos')
-        .update({ estado: 'aceite' }) // Certifica-te que a coluna se chama 'estado'
-        .eq('id', id);
+            const { data, error } = await baseDados
+                .from('pedidos')
+                .update({ estado: 'aceite' }) 
+                .eq('id', id);
 
-    if (error) {
-        alert("Erro ao aceitar trabalho: " + error.message);
-        botao.textContent = "Aceitar Trabalho";
-        botao.disabled = false;
-    } else {
-        alert("Trabalho aceite com sucesso! 🎉");
-        carregarTrabalhos(); // Recarrega a lista para o cartão mudar de estado
-    }
-}
+            if (error) {
+                alert("Erro ao aceitar trabalho: " + error.message);
+                botao.textContent = "Aceitar Trabalho";
+                botao.disabled = false;
+            } else {
+                alert("Trabalho aceite com sucesso! 🎉");
+                carregarTrabalhos(); // Atualiza os cartões
+            }
+        }
+
+        // Executar a função mal a página abre
+        carregarTrabalhos();
+    </script>
+</body>
+</html>
