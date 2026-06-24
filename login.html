@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Profissional - PontoCerto</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --ink: #1C2118; --cream: #F7F4EC; --sage: #8A9A5B; --clay: #B8895E; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: var(--ink); height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        
+        .login-box { background: white; max-width: 400px; width: 100%; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        
+        .logo { font-family: 'Fraunces', serif; font-size: 24px; color: var(--ink); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .logo i { color: var(--sage); }
+        
+        h1 { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 8px; }
+        p.sub { color: #666; font-size: 14px; margin-bottom: 24px; }
+        
+        .form-group { text-align: left; margin-bottom: 16px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #555; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 15px; }
+        
+        .btn-login { background: var(--ink); color: var(--cream); border: none; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn-login:hover { background: var(--clay); }
+        
+        .erro-msg { color: #C62828; font-size: 14px; margin-top: 16px; display: none; background: #FFEBEE; padding: 10px; border-radius: 8px; }
+        
+        .voltar { display: inline-block; margin-top: 24px; font-size: 14px; color: #666; text-decoration: none; }
+        .voltar:hover { color: var(--ink); }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <div class="logo"><i class="fa-solid fa-location-dot"></i> PontoCerto</div>
+        <h1>Área Profissional</h1>
+        <p class="sub">Inicie sessão para ver os trabalhos na sua zona.</p>
+
+        <form id="form-login">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="O seu email de registo">
+            </div>
+            
+            <div class="form-group">
+                <label>Palavra-passe</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" id="btn-entrar" class="btn-login">Entrar no Painel</button>
+            <div id="mensagem-erro" class="erro-msg"></div>
+        </form>
+
+        <a href="index.html" class="voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+        const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('form-login').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const botao = document.getElementById('btn-entrar');
+            const mensagem = document.getElementById('mensagem-erro');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            botao.textContent = "A verificar...";
+            botao.disabled = true;
+            mensagem.style.display = 'none';
+
+            // Tentar fazer login no Supabase Auth
+            const { data, error } = await baseDados.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                mensagem.textContent = "Email ou palavra-passe incorretos.";
+                mensagem.style.display = 'block';
+                botao.textContent = "Entrar no Painel";
+                botao.disabled = false;
+            } else {
+                botao.textContent = "Login com sucesso! A entrar...";
+                // Se o login estiver certo, envia o utilizador para o painel
+                window.location.href = "profissional.html";
+            }
+        });
+    </script>
+</body>
+</html>
