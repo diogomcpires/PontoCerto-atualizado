@@ -72,6 +72,16 @@
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // VERIFICAR SE O UTILIZADOR ESTÁ COM LOGIN FEITO
+        async function verificarSeguranca() {
+            const { data } = await baseDados.auth.getSession();
+            
+            // Se não houver sessão ativa, expulsa a pessoa para a página de login
+            if (!data.session) {
+                window.location.href = "login.html";
+            }
+        }
+        verificarSeguranca();
 
         // ==========================================
         // FUNÇÃO PARA LER OS PEDIDOS
