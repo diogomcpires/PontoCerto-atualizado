@@ -107,7 +107,7 @@
 
                 const { data: uploadData, error: uploadError } = await baseDados
                     .storage
-                    .from('curriculos')
+                    .from('Curriculos')
                     .upload(nomeFicheiroUnico, ficheiro);
 
                 if (uploadError) throw new Error("Erro ao guardar o ficheiro: " + uploadError.message);
