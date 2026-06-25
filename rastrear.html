@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguir Pedido - PontoCerto</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #F7F4EC; color: #1C2118; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .caixa { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; max-width: 400px; width: 100%; }
+        h1 { font-size: 24px; margin-bottom: 20px; color: #B8895E; }
+        input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 16px; text-align: center; }
+        button { background: #1C2118; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        button:hover { background: #3D4A2E; }
+        
+        #resultado { margin-top: 24px; padding: 20px; border-radius: 8px; display: none; }
+        .pendente { background: #FFF3E0; border: 1px solid #FFB74D; color: #E65100; }
+        .aceite { background: #E8F5E9; border: 1px solid #81C784; color: #2E7D32; }
+    </style>
+</head>
+<body>
+
+    <div class="caixa">
+        <h1>Onde pára o meu pedido?</h1>
+        <p style="margin-bottom: 20px; font-size: 14px; color: #666;">Insira o número de ID que recebeu quando fez o pedido.</p>
+        
+        <input type="number" id="id-pedido" placeholder="Ex: 14">
+        <button onclick="procurarPedido()">Consultar Estado</button>
+
+        <div id="resultado">
+            <h3 id="titulo-resultado" style="margin-bottom: 8px;"></h3>
+            <p id="texto-resultado" style="font-size: 14px;"></p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+        const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function procurarPedido() {
+            const id = document.getElementById('id-pedido').value;
+            const divResultado = document.getElementById('resultado');
+            
+            if(!id) return;
+
+            const { data: pedido, error } = await baseDados.from('pedidos').select('*').eq('id', id).single();
+
+            divResultado.style.display = 'block';
+
+            if (error || !pedido) {
+                divResultado.className = 'pendente';
+                document.getElementById('titulo-resultado').textContent = "Pedido não encontrado";
+                document.getElementById('texto-resultado').textContent = "Verifique se digitou o ID corretamente.";
+            } else {
+                const estado = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
+                
+                if (estado === 'ACEITE') {
+                    divResultado.className = 'aceite';
+                    document.getElementById('titulo-resultado').textContent = "Trabalho Aceite! 🎉";
+                    document.getElementById('texto-resultado').textContent = `Um profissional já aceitou o seu serviço: "${pedido.titulo}". Fique atento ao seu telefone.`;
+                } else {
+                    divResultado.className = 'pendente';
+                    document.getElementById('titulo-resultado').textContent = "A aguardar profissional ⏳";
+                    document.getElementById('texto-resultado').textContent = "O seu pedido já está no quadro. Assim que um profissional da sua zona aceitar, o estado muda.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
