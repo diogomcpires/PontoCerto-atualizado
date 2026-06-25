@@ -32,6 +32,11 @@
         
         .btn-aceitar { background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
         .btn-aceitar:hover { background: #9db267; }
+        
+        /* NOVO ESTILO DO BOTÃO CONCLUIR */
+        .btn-concluir { background: transparent; color: var(--clay); border: 2px solid var(--clay); padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn-concluir:hover { background: var(--clay); color: var(--cream); }
+        
         .aviso-vazio { opacity: 0.5; font-style: italic; grid-column: 1 / -1; }
     </style>
 </head>
@@ -76,10 +81,16 @@
 
             if (pedidos) {
                 pedidos.forEach(pedido => {
-                    const isAceite = pedido.estado && pedido.estado.toUpperCase() === 'ACEITE';
+                    const estado = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
                     
+                    // Se estiver concluído, o cartão nem sequer é desenhado no ecrã (desaparece)
+                    if (estado === 'CONCLUIDO') return; 
+
+                    const isAceite = estado === 'ACEITE';
+                    
+                    // Se estiver aceite, mostra o botão "Concluir Trabalho"
                     let htmlBotao = isAceite 
-                        ? `<button class="btn-aceitar" style="background: transparent; color: var(--clay); border: 1px solid var(--clay);" disabled><i class="fa-solid fa-check"></i> Trabalho em Curso</button>` 
+                        ? `<button class="btn-concluir" onclick="concluirTrabalho(event, ${pedido.id})"><i class="fa-solid fa-check-double"></i> Concluir Trabalho</button>` 
                         : `<button class="btn-aceitar" onclick="aceitarTrabalho(event, ${pedido.id})">Aceitar Trabalho</button>`;
 
                     const cartao = `
@@ -111,12 +122,16 @@
         async function aceitarTrabalho(event, id) {
             event.target.textContent = "A aceitar...";
             const { error } = await baseDados.from('pedidos').update({ estado: 'aceite' }).eq('id', id);
-            
-            if (!error) {
-                carregarTrabalhos(); // Move logo o cartão para a lista de baixo!
-            } else {
-                alert("Erro ao aceitar.");
-            }
+            if (!error) carregarTrabalhos();
+            else alert("Erro ao aceitar.");
+        }
+
+        // NOVA FUNÇÃO: CONCLUIR TRABALHO
+        async function concluirTrabalho(event, id) {
+            event.target.textContent = "A finalizar...";
+            const { error } = await baseDados.from('pedidos').update({ estado: 'concluido' }).eq('id', id);
+            if (!error) carregarTrabalhos();
+            else alert("Erro ao concluir.");
         }
 
         verificarSeguranca();
