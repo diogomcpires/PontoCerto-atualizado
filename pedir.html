@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer um Pedido - PontoCerto</title>
     
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,13 +78,9 @@
     </section>
 
     <script>
-        // ==========================================
-        // ⚠️ SUBSTITUI AQUI AS TUAS CHAVES SUPABASE
-        // ==========================================
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
 
-        // 🛠️ Nome corrigido para "baseDados" para evitar o erro da Consola
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function enviarPedido(event) {
@@ -93,18 +88,30 @@
             const tituloInput = document.getElementById('txt_titulo').value;
             const descricaoInput = document.getElementById('txt_descricao').value;
             const tipoInput = document.getElementById('sel_tipo').value;
+            const botaoBotao = event.target.querySelector('button');
+            
+            botaoBotao.textContent = "A guardar pedido...";
+            botaoBotao.disabled = true;
 
-            // 🛠️ Usamos o "baseDados" para guardar as informações
+            // ADICIONADO .select() NO FIM PARA O SUPABASE DEVOLVER O ID!
             const { data, error } = await baseDados.from('pedidos').insert([
                 { titulo: tituloInput, descricao: descricaoInput, tipo_servico: tipoInput }
-            ]);
+            ]).select();
 
             if (error) {
                 console.error("Erro do Supabase:", error);
                 alert('Erro ao enviar pedido. Verifica a consola.');
+                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados';
+                botaoBotao.disabled = false;
             } else {
-                alert('Sucesso! O pedido foi guardado na tua Base de Dados! 🎉');
-                document.getElementById('form-pedido').reset(); // Limpa o formulário depois de enviar
+                // MENSAGEM ALTERADA PARA MOSTRAR O ID (data[0].id)
+                alert('Sucesso! O número do seu pedido é: ' + data[0].id + '\n\nAponte este número ou guarde-o para poder rastrear o estado do serviço.');
+                document.getElementById('form-pedido').reset();
+                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados';
+                botaoBotao.disabled = false;
+                
+                // Redireciona o cliente para a página de rastreio logo a seguir a pedir
+                window.location.href = "rastrear.html";
             }
         }
     </script>
