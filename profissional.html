@@ -6,157 +6,120 @@
     <title>Painel de Trabalhos - PontoCerto</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { 
-            --ink: #1C2118; --ink-light: #2A3224; --cream: #F7F4EC; 
-            --sage: #8A9A5B; --clay: #B8895E;
-            --font-display: "Fraunces", Georgia, serif; 
-            --font-body: "Inter", sans-serif; 
-        }
-        
+        :root { --ink: #1C2118; --ink-light: #2A3224; --cream: #F7F4EC; --sage: #8A9A5B; --clay: #B8895E; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-body); background: var(--ink); color: var(--cream); line-height: 1.6; padding: 40px 20px; }
+        body { font-family: "Inter", sans-serif; background: var(--ink); color: var(--cream); line-height: 1.6; padding: 40px 20px; }
         .container { max-width: 1000px; margin: 0 auto; }
         
         .header-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid rgba(247, 244, 236, 0.1); padding-bottom: 20px; }
-        .header-painel h1 { font-family: var(--font-display); font-size: 32px; color: var(--clay); }
-        .btn-voltar { color: var(--cream); text-decoration: none; font-size: 14px; opacity: 0.8; transition: opacity 0.2s; }
-        .btn-voltar:hover { opacity: 1; }
-
-        .estado-carregamento { text-align: center; padding: 50px; font-size: 18px; opacity: 0.7; }
-
-        /* Grelha de Trabalhos */
+        .header-painel h1 { font-family: "Fraunces", serif; font-size: 32px; color: var(--clay); }
+        .btn-voltar { color: var(--cream); text-decoration: none; font-size: 14px; opacity: 0.8; }
+        
+        h2.seccao-titulo { font-family: "Fraunces", serif; color: var(--sage); margin: 40px 0 20px; font-size: 24px; border-bottom: 1px dashed rgba(138, 154, 91, 0.3); padding-bottom: 10px; }
+        
         .grid-trabalhos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        
-        /* Cartão de Trabalho */
-        .cartao-trabalho { background: var(--ink-light); border: 1px solid rgba(247, 244, 236, 0.1); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; transition: transform 0.2s; }
-        .cartao-trabalho:hover { transform: translateY(-4px); border-color: rgba(247, 244, 236, 0.3); }
-        
+        .cartao-trabalho { background: var(--ink-light); border: 1px solid rgba(247, 244, 236, 0.1); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; }
         .cartao-topo { display: flex; justify-content: space-between; margin-bottom: 16px; }
-        .tag-tipo { background: rgba(138, 154, 91, 0.2); color: var(--sage); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .tag-estado { color: #B8895E; font-size: 12px; font-family: 'Space Mono', monospace; }
-        .tag-estado.aceite { color: var(--sage); } /* Cor verde quando está aceite */
+        .tag-tipo { background: rgba(138, 154, 91, 0.2); color: var(--sage); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
         
-        .cartao-trabalho h3 { font-family: var(--font-display); font-size: 22px; margin-bottom: 8px; }
+        .cartao-trabalho h3 { font-family: "Fraunces", serif; font-size: 22px; margin-bottom: 8px; }
         .cartao-trabalho p { font-size: 15px; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; }
+        .cartao-trabalho strong { display: block; margin-bottom: 10px; font-size: 13px; color: var(--clay); }
         
-        .btn-aceitar { background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-size: 15px; width: 100%; }
+        .btn-aceitar { background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
         .btn-aceitar:hover { background: #9db267; }
-        .btn-aceite { background: #3D4A2E; color: white; opacity: 0.8; cursor: not-allowed; }
+        .aviso-vazio { opacity: 0.5; font-style: italic; grid-column: 1 / -1; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header class="header-painel">
-            <h1><i class="fa-solid fa-person-digging"></i> Trabalhos Disponíveis</h1>
+            <h1><i class="fa-solid fa-person-digging"></i> O Meu Painel</h1>
             <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Sair do Painel</a>
         </header>
 
-        <div id="lista-trabalhos" class="grid-trabalhos">
-            <div class="estado-carregamento">A procurar trabalhos na tua zona... <i class="fa-solid fa-spinner fa-spin"></i></div>
-        </div>
+        <h2 class="seccao-titulo">Novos Pedidos na sua Zona</h2>
+        <div id="lista-pendentes" class="grid-trabalhos">A carregar...</div>
+
+        <h2 class="seccao-titulo" style="color: var(--clay);">Trabalhos em Curso (Aceites)</h2>
+        <div id="lista-aceites" class="grid-trabalhos">A carregar...</div>
     </div>
 
     <script>
-        // ==========================================
-        // LIGAÇÃO AO SUPABASE
-        // ==========================================
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
-        
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        // VERIFICAR SE O UTILIZADOR ESTÁ COM LOGIN FEITO
+
+        // VERIFICAR SEGURANÇA LOGO AO INÍCIO
         async function verificarSeguranca() {
             const { data } = await baseDados.auth.getSession();
-            
-            // Se não houver sessão ativa, expulsa a pessoa para a página de login
-            if (!data.session) {
-                window.location.href = "login.html";
-            }
+            if (!data.session) window.location.href = "login.html";
+            else carregarTrabalhos();
         }
-        verificarSeguranca();
 
-        // ==========================================
-        // FUNÇÃO PARA LER OS PEDIDOS
-        // ==========================================
         async function carregarTrabalhos() {
-            const listaDiv = document.getElementById('lista-trabalhos');
+            const divPendentes = document.getElementById('lista-pendentes');
+            const divAceites = document.getElementById('lista-aceites');
 
-            const { data: pedidos, error } = await baseDados
-                .from('pedidos')
-                .select('*')
-                .order('id', { ascending: false });
+            const { data: pedidos, error } = await baseDados.from('pedidos').select('*').order('id', { ascending: false });
 
-            if (error) {
-                console.error("Erro ao ler dados:", error);
-                listaDiv.innerHTML = '<div class="estado-carregamento">Ocorreu um erro a ler os trabalhos.</div>';
-                return;
-            }
+            divPendentes.innerHTML = '';
+            divAceites.innerHTML = '';
 
-            if (pedidos.length === 0) {
-                listaDiv.innerHTML = '<div class="estado-carregamento">Ainda não há trabalhos disponíveis.</div>';
-                return;
-            }
+            let countPendentes = 0;
+            let countAceites = 0;
 
-            listaDiv.innerHTML = '';
+            if (pedidos) {
+                pedidos.forEach(pedido => {
+                    const isAceite = pedido.estado && pedido.estado.toUpperCase() === 'ACEITE';
+                    
+                    let htmlBotao = isAceite 
+                        ? `<button class="btn-aceitar" style="background: transparent; color: var(--clay); border: 1px solid var(--clay);" disabled><i class="fa-solid fa-check"></i> Trabalho em Curso</button>` 
+                        : `<button class="btn-aceitar" onclick="aceitarTrabalho(event, ${pedido.id})">Aceitar Trabalho</button>`;
 
-            pedidos.forEach(pedido => {
-                // Verificar se o pedido já foi aceite
-                const estadoAtual = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
-                const isAceite = estadoAtual === 'ACEITE';
-                
-                // Mudar o botão se já estiver aceite
-                const htmlBotao = isAceite 
-                    ? `<button class="btn-aceitar btn-aceite" disabled><i class="fa-solid fa-check"></i> Trabalho Aceite</button>` 
-                    : `<button class="btn-aceitar" onclick="aceitarTrabalho(event, ${pedido.id})">Aceitar Trabalho</button>`;
-
-                const cartao = `
-                    <div class="cartao-trabalho">
-                        <div class="cartao-topo">
-                            <span class="tag-tipo">${pedido.tipo_servico || 'Serviço'}</span>
-                            <span class="tag-estado ${isAceite ? 'aceite' : ''}">${isAceite ? '✓ ACEITE' : '⏳ PENDENTE'}</span>
+                    const cartao = `
+                        <div class="cartao-trabalho">
+                            <div class="cartao-topo">
+                                <span class="tag-tipo">${pedido.tipo_servico || 'Serviço'}</span>
+                                <span style="font-family: monospace; opacity: 0.5;">ID: #${pedido.id}</span>
+                            </div>
+                            <h3>${pedido.titulo}</h3>
+                            <p>${pedido.descricao}</p>
+                            ${htmlBotao}
                         </div>
-                        <h3>${pedido.titulo}</h3>
-                        <p>${pedido.descricao}</p>
-                        ${htmlBotao}
-                    </div>
-                `;
-                listaDiv.innerHTML += cartao;
-            });
+                    `;
+
+                    if (isAceite) {
+                        divAceites.innerHTML += cartao;
+                        countAceites++;
+                    } else {
+                        divPendentes.innerHTML += cartao;
+                        countPendentes++;
+                    }
+                });
+            }
+
+            if (countPendentes === 0) divPendentes.innerHTML = '<div class="aviso-vazio">Não há novos pedidos de momento.</div>';
+            if (countAceites === 0) divAceites.innerHTML = '<div class="aviso-vazio">Ainda não aceitou nenhum trabalho.</div>';
         }
 
-        // ==========================================
-        // FUNÇÃO PARA ACEITAR O TRABALHO (UPDATE)
-        // ==========================================
         async function aceitarTrabalho(event, id) {
-            const botao = event.target;
-            botao.textContent = "A aceitar...";
-            botao.disabled = true;
-
-            const { data, error } = await baseDados
-                .from('pedidos')
-                .update({ estado: 'aceite' }) 
-                .eq('id', id);
-
-            if (error) {
-                alert("Erro ao aceitar trabalho: " + error.message);
-                botao.textContent = "Aceitar Trabalho";
-                botao.disabled = false;
+            event.target.textContent = "A aceitar...";
+            const { error } = await baseDados.from('pedidos').update({ estado: 'aceite' }).eq('id', id);
+            
+            if (!error) {
+                carregarTrabalhos(); // Move logo o cartão para a lista de baixo!
             } else {
-                alert("Trabalho aceite com sucesso! 🎉");
-                carregarTrabalhos(); // Atualiza os cartões
+                alert("Erro ao aceitar.");
             }
         }
 
-        // Executar a função mal a página abre
-        carregarTrabalhos();
+        verificarSeguranca();
     </script>
 </body>
 </html>
