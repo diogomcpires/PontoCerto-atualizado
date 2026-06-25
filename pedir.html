@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer um Pedido - PontoCerto</title>
     
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +57,6 @@
                 <h3>Faça o seu pedido</h3>
                 <form id="form-pedido" onsubmit="enviarPedido(event)">
                     
-                    <!-- DADOS DO CLIENTE -->
                     <div class="form-group">
                         <label>O seu Nome</label>
                         <input type="text" id="txt_nome" placeholder="Ex: Maria Silva" required>
@@ -77,7 +75,6 @@
 
                     <div class="form-divider"></div>
 
-                    <!-- DADOS DO SERVIÇO -->
                     <div class="form-group">
                         <label>O que precisa? (Título)</label>
                         <input type="text" id="txt_titulo" placeholder="Ex: Limpeza de terreno de 400m2" required>
@@ -142,7 +139,7 @@
 
             if (error) {
                 console.error("Erro do Supabase:", error);
-                alert('Erro ao enviar pedido. Verificaste se criaste as novas colunas no Supabase?');
+                alert('Erro ao enviar pedido. Verificaste se criaste as novas colunas no Supabase (nome_cliente, email_cliente, telefone_cliente)?');
                 botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados';
                 botaoBotao.disabled = false;
             } else {
@@ -151,6 +148,7 @@
                 botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados';
                 botaoBotao.disabled = false;
                 
+                // Redireciona logo para a página de rastreio
                 window.location.href = "rastrear.html";
             }
         }
