@@ -29,9 +29,7 @@
         .btn-submit:hover { background: var(--clay); }
         .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
         
-        .mensagem { display: none; padding: 15px; border-radius: 8px; text-align: center; margin-top: 20px; font-weight: 600; }
-        .sucesso { background: #E8F5E9; color: #2E7D32; display: block; }
-        .erro { background: #FFEBEE; color: #C62828; display: block; }
+        /* Já não precisamos das classes antigas de .mensagem, o SweetAlert2 trata disso! */
     </style>
 </head>
 <body>
@@ -72,9 +70,18 @@
             </div>
 
             <button type="submit" id="btn-enviar" class="btn-submit">Enviar Candidatura</button>
-            <div id="mensagem-alerta" class="mensagem"></div>
         </form>
     </div>
+
+    <!-- ========================================== -->
+    <!-- MOTORES PREMIUM: EmailJS e SweetAlert2     -->
+    <!-- ========================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Ligar a tua conta EmailJS (Public Key)
+        emailjs.init("UrnlxHD-Mo4izdIh6");
+    </script>
 
     <script>
         // LIGAÇÃO AO SUPABASE
@@ -86,10 +93,8 @@
             e.preventDefault();
             
             const botao = document.getElementById('btn-enviar');
-            const mensagem = document.getElementById('mensagem-alerta');
             botao.textContent = "A enviar ficheiro...";
             botao.disabled = true;
-            mensagem.className = "mensagem"; // Limpar classes antigas
             
             // 1. Obter os dados do formulário
             const nome = document.getElementById('nome').value;
@@ -101,7 +106,6 @@
 
             try {
                 // 2. Fazer o Upload do Ficheiro para o Storage
-                // Criar um nome único para o ficheiro para não haver conflitos
                 const extensao = ficheiro.name.split('.').pop();
                 const nomeFicheiroUnico = `${Date.now()}_${nome.replace(/\s+/g, '')}.${extensao}`;
 
@@ -110,7 +114,7 @@
                     .from('Curriculos')
                     .upload(nomeFicheiroUnico, ficheiro);
 
-                if (uploadError) throw new Error("Erro ao guardar o ficheiro: " + uploadError.message);
+                if (uploadError) throw new Error("Erro ao guardar o ficheiro no cofre.");
 
                 botao.textContent = "A guardar dados...";
 
@@ -122,21 +126,50 @@
                         email: email,
                         telemovel: telemovel,
                         especialidade: especialidade,
-                        curriculo_url: uploadData.path // Guardamos o caminho do ficheiro aqui!
+                        curriculo_url: uploadData.path,
+                        estado: 'pendente' // Importante para aprovares depois
                     }]);
 
-                if (dbError) throw new Error("Erro ao guardar dados: " + dbError.message);
+                if (dbError) throw new Error("Erro ao guardar os dados na tabela.");
 
-                // Sucesso!
-                mensagem.textContent = "Candidatura enviada com sucesso! Entraremos em contacto brevemente.";
-                mensagem.classList.add("sucesso");
-                botao.textContent = "Candidatura Concluída ✓";
-                document.getElementById('form-candidatura').reset();
+                // 4. Enviar o EmailJS de forma invisível
+                const dadosEmail = {
+                    nome_profissional: nome,
+                    email_profissional: email
+                };
+
+                emailjs.send("service_xqo1u2b", "template_rew7noa", dadosEmail)
+                    .then(() => console.log("Email de recrutamento enviado com sucesso!"))
+                    .catch((erro) => console.error("Erro silencioso no email:", erro));
+
+                // 5. Mostrar Pop-up Premium de Sucesso
+                Swal.fire({
+                    title: "Candidatura Recebida! 🚀",
+                    html: `Obrigado, <b>${nome}</b>.<br><br>Já recebemos os teus dados. A nossa equipa vai analisar o teu perfil e enviámos-te um email com mais informações.`,
+                    icon: "success",
+                    confirmButtonColor: "#1C2118", // Usa a cor do teu botão (Ink)
+                    confirmButtonText: "Voltar à Página Principal",
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-candidatura').reset();
+                        botao.textContent = "Enviar Candidatura";
+                        botao.disabled = false;
+                        // Envia-o de volta para a Homepage
+                        window.location.href = "index.html"; 
+                    }
+                });
 
             } catch (erro) {
-                mensagem.textContent = erro.message;
-                mensagem.classList.add("erro");
-                botao.textContent = "Tentar Novamente";
+                console.error(erro);
+                // Pop-up de erro mais profissional
+                Swal.fire({
+                    title: "Ops!",
+                    text: erro.message || "Houve um erro ao enviar a candidatura. Tenta novamente.",
+                    icon: "error",
+                    confirmButtonColor: "#1C2118"
+                });
+                botao.textContent = "Enviar Candidatura";
                 botao.disabled = false;
             }
         });
