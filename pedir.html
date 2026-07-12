@@ -93,13 +93,23 @@
                     </div>
                     
                     <button type="submit" class="btn-primary">
-                        <i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Pedido
                     </button>
                 </form>
             </div>
             
         </div>
     </section>
+
+    <!-- ========================================== -->
+    <!-- MOTORES PREMIUM: EmailJS e SweetAlert2     -->
+    <!-- ========================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Ligar a tua conta EmailJS (Public Key)
+        emailjs.init("UrnlxHD-Mo4izdIh6");
+    </script>
 
     <script>
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
@@ -140,16 +150,49 @@
             if (error) {
                 console.error("Erro do Supabase:", error);
                 alert('Erro ao enviar pedido. Verificaste se criaste as novas colunas no Supabase (nome_cliente, email_cliente, telefone_cliente)?');
-                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados';
+                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
                 botaoBotao.disabled = false;
             } else {
-                alert('Sucesso! O número do seu pedido é: ' + data[0].id + '\n\nAponte este número ou guarde-o para poder rastrear o estado do serviço.');
-                document.getElementById('form-pedido').reset();
-                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido para a Base de Dados';
-                botaoBotao.disabled = false;
                 
-                // Redireciona logo para a página de rastreio
-                window.location.href = "rastrear.html";
+                // ==========================================
+                // INÍCIO DO SISTEMA DE EMAIL PREMIUM
+                // ==========================================
+                const pedidoGuardado = data[0]; 
+
+                // 1. Preparar o pacote com as variáveis exatas do template EmailJS
+                const dadosEmail = {
+                    nome_cliente: pedidoGuardado.nome_cliente,
+                    email_cliente: pedidoGuardado.email_cliente,
+                    titulo_servico: pedidoGuardado.titulo,
+                    id_pedido: pedidoGuardado.id
+                };
+
+                // 2. Disparar o email de forma invisível
+                emailjs.send("service_xqo1u2b", "template_gpwoicq", dadosEmail)
+                    .then(() => console.log("Email Premium enviado com sucesso!"))
+                    .catch((erro) => console.error("Erro silencioso no email:", erro));
+
+                // 3. Mostrar o Pop-up Premium ao Cliente
+                Swal.fire({
+                    title: "Pedido Recebido! 🎉",
+                    html: `O seu número de acompanhamento é o <b>#${pedidoGuardado.id}</b>.<br><br>Enviámos-lhe um email com todos os detalhes.`,
+                    icon: "success",
+                    confirmButtonColor: "#1C2118", // Usa a cor 'ink' do teu site
+                    confirmButtonText: "Acompanhar Pedido",
+                    allowOutsideClick: false // Impede que ele feche o aviso sem querer
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Limpa o formulário, repõe o botão e leva-o para o rastreio
+                        document.getElementById('form-pedido').reset();
+                        botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
+                        botaoBotao.disabled = false;
+                        window.location.href = "rastrear.html";
+                    }
+                });
+                // ==========================================
+                // FIM DO SISTEMA DE EMAIL PREMIUM
+                // ==========================================
+                
             }
         }
     </script>
