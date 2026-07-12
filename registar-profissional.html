@@ -28,8 +28,6 @@
         .btn-submit { background: var(--ink); color: var(--cream); border: none; width: 100%; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
         .btn-submit:hover { background: var(--clay); }
         .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
-        
-        /* Já não precisamos das classes antigas de .mensagem, o SweetAlert2 trata disso! */
     </style>
 </head>
 <body>
@@ -127,7 +125,7 @@
                         telemovel: telemovel,
                         especialidade: especialidade,
                         curriculo_url: uploadData.path,
-                        estado: 'pendente' // Importante para aprovares depois
+                        aprovado: false // <-- AQUI ESTÁ A TUA COLUNA CORRIGIDA!
                     }]);
 
                 if (dbError) throw new Error("Erro ao guardar os dados na tabela.");
