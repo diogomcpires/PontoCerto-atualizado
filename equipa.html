@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Nossa Equipa - PontoCerto</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --ink: #1C2118; 
+            --cream: #F7F4EC; 
+            --sage: #8A9A5B; 
+            --clay: #B8895E;
+            --cream-dark: #EAE6D7;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--cream); 
+            color: var(--ink); 
+            line-height: 1.6;
+        }
+        
+        /* Cabeçalho do Site */
+        .site-header { padding: 20px 40px; border-bottom: 1px solid rgba(28, 33, 24, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; color: var(--ink); text-decoration: none; }
+        .btn-voltar { font-size: 14px; font-weight: 600; color: var(--clay); text-decoration: none; transition: 0.2s; }
+        .btn-voltar:hover { color: var(--ink); }
+
+        /* Título da Página */
+        .hero { text-align: center; padding: 80px 20px 40px; }
+        .hero h1 { font-family: 'Fraunces', serif; font-size: 48px; color: var(--ink); margin-bottom: 16px; }
+        .hero p { font-size: 18px; color: #555; max-width: 600px; margin: 0 auto; }
+
+        /* Grelha de Perfis */
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px 80px; }
+        .grid-equipa { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 30px; 
+        }
+
+        /* Cartão de Perfil Premium */
+        .perfil-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        
+        .perfil-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(138, 154, 91, 0.15);
+        }
+
+        /* A Faixa no topo do cartão */
+        .perfil-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 8px;
+            background: var(--sage);
+        }
+
+        /* Fotografia / Avatar */
+        .foto-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            padding: 5px;
+            background: var(--cream);
+            border: 2px dashed var(--clay);
+        }
+        
+        .foto-perfil {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Informações */
+        .perfil-nome { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin-bottom: 5px; }
+        .perfil-especialidade { 
+            display: inline-block;
+            background: rgba(184, 137, 94, 0.1); 
+            color: var(--clay);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Contactos Ocultos (Design limpo) */
+        .perfil-detalhes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--cream-dark);
+        }
+        
+        .detalhe-item {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .detalhe-item i { color: var(--sage); }
+
+        /* Loading e Vazio */
+        .estado-mensagem { text-align: center; padding: 50px; font-size: 18px; color: #666; grid-column: 1 / -1; }
+        .spinner { animation: spin 1s linear infinite; font-size: 30px; color: var(--sage); margin-bottom: 15px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="index.html" class="logo"><i class="fa-solid fa-location-dot"></i> PontoCerto</a>
+        <a href="index.html" class="btn-voltar">← Voltar à página principal</a>
+    </header>
+
+    <section class="hero">
+        <h1>Conheça os nossos Profissionais</h1>
+        <p>Uma rede de especialistas de confiança em Odivelas, prontos para tratar do seu jardim e terreno com a máxima qualidade.</p>
+    </section>
+
+    <div class="container">
+        <div id="grid-equipa" class="grid-equipa">
+            <div class="estado-mensagem">
+                <i class="fa-solid fa-circle-notch spinner"></i><br>
+                A carregar os nossos especialistas...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LIGAÇÃO AO SUPABASE
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+        const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function carregarEquipa() {
+            const grid = document.getElementById('grid-equipa');
+
+            try {
+                // Vai buscar APENAS quem está aprovado (aprovado = true)
+                const { data, error } = await baseDados
+                    .from('profissionais')
+                    .select('*')
+                    .eq('aprovado', true);
+
+                if (error) throw error;
+
+                grid.innerHTML = ''; // Limpa o aviso de "A carregar..."
+
+                if (data.length === 0) {
+                    grid.innerHTML = `
+                        <div class="estado-mensagem">
+                            <i class="fa-solid fa-seedling" style="font-size: 40px; color: var(--sage); margin-bottom: 15px;"></i><br>
+                            A nossa equipa está a crescer. Em breve teremos aqui os nossos especialistas!
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Criar o cartão para cada profissional aprovado
+                data.forEach(prof => {
+                    // TRUQUE DE MESTRE: Gerar um Avatar bonito com as iniciais do nome se não houver foto
+                    // Usamos a cor Sage da tua marca (8A9A5B) para o fundo
+                    const fotoAutomatica = `https://ui-avatars.com/api/?name=${encodeURIComponent(prof.nome)}&background=8A9A5B&color=fff&size=200&font-size=0.4&bold=true`;
+
+                    const cartao = document.createElement('div');
+                    cartao.className = 'perfil-card';
+                    cartao.innerHTML = `
+                        <div class="foto-wrapper">
+                            <img src="${fotoAutomatica}" alt="Foto de ${prof.nome}" class="foto-perfil">
+                        </div>
+                        <h3 class="perfil-nome">${prof.nome}</h3>
+                        <div class="perfil-especialidade">${prof.especialidade}</div>
+                        
+                        <div class="perfil-detalhes">
+                            <div class="detalhe-item">
+                                <i class="fa-regular fa-envelope"></i> Profissional Verificado
+                            </div>
+                            <div class="detalhe-item">
+                                <i class="fa-solid fa-star" style="color: #FFD43B;"></i> PontoCerto Partner
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(cartao);
+                });
+
+            } catch (erro) {
+                console.error("Erro ao carregar equipa:", erro);
+                grid.innerHTML = `<div class="estado-mensagem" style="color: red;">Ocorreu um erro ao carregar a equipa. Tente atualizar a página.</div>`;
+            }
+        }
+
+        // Executar mal a página abre
+        carregarEquipa();
+    </script>
+</body>
+</html>
