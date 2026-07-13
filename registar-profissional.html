@@ -8,7 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         :root { --ink: #1C2118; --cream: #F7F4EC; --sage: #8A9A5B; --clay: #B8895E; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -71,18 +72,7 @@
         </form>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MOTORES PREMIUM: EmailJS e SweetAlert2     -->
-    <!-- ========================================== -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Ligar a tua conta EmailJS (Public Key)
-        emailjs.init("UrnlxHD-Mo4izdIh6");
-    </script>
-
-    <script>
-        // LIGAÇÃO AO SUPABASE
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -94,7 +84,6 @@
             botao.textContent = "A enviar ficheiro...";
             botao.disabled = true;
             
-            // 1. Obter os dados do formulário
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const telemovel = document.getElementById('telemovel').value;
@@ -103,7 +92,6 @@
             const ficheiro = ficheiroInput.files[0];
 
             try {
-                // 2. Fazer o Upload do Ficheiro para o Storage
                 const extensao = ficheiro.name.split('.').pop();
                 const nomeFicheiroUnico = `${Date.now()}_${nome.replace(/\s+/g, '')}.${extensao}`;
 
@@ -116,7 +104,6 @@
 
                 botao.textContent = "A guardar dados...";
 
-                // 3. Guardar os dados de texto na tabela 'profissionais'
                 const { error: dbError } = await baseDados
                     .from('profissionais')
                     .insert([{
@@ -125,48 +112,28 @@
                         telemovel: telemovel,
                         especialidade: especialidade,
                         curriculo_url: uploadData.path,
-                        aprovado: false // <-- AQUI ESTÁ A TUA COLUNA CORRIGIDA!
+                        aprovado: false
                     }]);
 
                 if (dbError) throw new Error("Erro ao guardar os dados na tabela.");
 
-                // 4. Enviar o EmailJS de forma invisível
-                const dadosEmail = {
-                    nome_profissional: nome,
-                    email_profissional: email
-                };
-
-                emailjs.send("service_xqo1u2b", "template_rew7noa", dadosEmail)
-                    .then(() => console.log("Email de recrutamento enviado com sucesso!"))
-                    .catch((erro) => console.error("Erro silencioso no email:", erro));
-
-                // 5. Mostrar Pop-up Premium de Sucesso
+                // Apenas Pop-up de Sucesso (O EmailJS foi removido daqui)
                 Swal.fire({
                     title: "Candidatura Recebida! 🚀",
-                    html: `Obrigado, <b>${nome}</b>.<br><br>Já recebemos os teus dados. A nossa equipa vai analisar o teu perfil e enviámos-te um email com mais informações.`,
+                    html: `Obrigado, <b>${nome}</b>.<br><br>Já recebemos os teus dados. A nossa equipa vai analisar o teu perfil e entrará em contacto muito em breve.`,
                     icon: "success",
-                    confirmButtonColor: "#1C2118", // Usa a cor do teu botão (Ink)
+                    confirmButtonColor: "#1C2118",
                     confirmButtonText: "Voltar à Página Principal",
                     allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        document.getElementById('form-candidatura').reset();
-                        botao.textContent = "Enviar Candidatura";
-                        botao.disabled = false;
-                        // Envia-o de volta para a Homepage
                         window.location.href = "index.html"; 
                     }
                 });
 
             } catch (erro) {
                 console.error(erro);
-                // Pop-up de erro mais profissional
-                Swal.fire({
-                    title: "Ops!",
-                    text: erro.message || "Houve um erro ao enviar a candidatura. Tenta novamente.",
-                    icon: "error",
-                    confirmButtonColor: "#1C2118"
-                });
+                Swal.fire({ title: "Ops!", text: erro.message, icon: "error", confirmButtonColor: "#1C2118" });
                 botao.textContent = "Enviar Candidatura";
                 botao.disabled = false;
             }
