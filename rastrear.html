@@ -297,28 +297,19 @@
             }
         }
 
-        // 3. Função que chama a janela do Stripe
-        function iniciarPagamento() {
-            const botao = document.getElementById('btn-stripe');
-            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
-            botao.style.opacity = '0.7';
-            botao.disabled = true;
+// 3. Função que chama a janela do Stripe
+function iniciarPagamento() {
+    const botao = document.getElementById('btn-stripe');
+    botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
+    botao.style.opacity = '0.7';
+    botao.disabled = true;
 
-            // A tua chave do Preço e os links de redirecionamento
-            stripe.redirectToCheckout({
-                lineItems: [{ price: 'price_1TssGn0cYnpOjO6V2rbyuTIr', quantity: 1 }],
-                mode: 'payment',
-                successUrl: window.location.origin + '/index.html?pago=sucesso', // Volta à página principal se correr bem
-                cancelUrl: window.location.href // Fica na página se cancelar
-            }).then(function (result) {
-                if (result.error) {
-                    alert(result.error.message);
-                    botao.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança';
-                    botao.style.opacity = '1';
-                    botao.disabled = false;
-                }
-            });
-        }
+    
+    const linkStripe = "https://buy.stripe.com/test_bJe00b1Nr8asbywcxCasg00";
+    
+    // Envia o cliente diretamente para o checkout seguro
+    window.location.href = linkStripe;
+}
     </script>
 </body>
 </html>
