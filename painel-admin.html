@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - PontoCerto</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --ink: #1C2118; --cream: #F7F4EC; --sage: #8A9A5B; --clay: #B8895E; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: var(--ink); padding: 40px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        h1 { font-family: 'Fraunces', serif; color: var(--ink); font-size: 32px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        
+        .cartao { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .cartao h3 { color: var(--clay); font-size: 20px; margin-bottom: 12px; }
+        .cartao p { margin-bottom: 8px; font-size: 14px; }
+        .cartao strong { font-weight: 600; color: var(--ink); }
+        
+        .btn-aprovar { background: var(--sage); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 16px; }
+        .btn-aprovar:hover { background: #6b7a42; }
+        
+        .mensagem-vazio { text-align: center; color: #666; font-size: 18px; margin-top: 50px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Painel de Aprovação</h1>
+        <p>Candidatos Pendentes</p>
+    </div>
+
+    <div id="lista-candidatos" class="grid">
+        <!-- Os candidatos vão aparecer aqui automaticamente -->
+    </div>
+    <div id="vazio" class="mensagem-vazio">Não há profissionais pendentes no momento. 🎉</div>
+
+    <script>
+        // Inicializar EmailJS
+        emailjs.init("UrnlxHD-Mo4izdIh6");
+
+        // Inicializar Supabase
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+        const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Função para carregar quem está pendente (aprovado: false)
+        async function carregarPendentes() {
+            const grid = document.getElementById('lista-candidatos');
+            const vazio = document.getElementById('vazio');
+            grid.innerHTML = ''; 
+
+            const { data, error } = await baseDados.from('profissionais').select('*').eq('aprovado', false);
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            if (data.length === 0) {
+                vazio.style.display = 'block';
+            } else {
+                vazio.style.display = 'none';
+                data.forEach(prof => {
+                    // Criar link do currículo no cofre
+                    const urlCurriculo = `${SUPABASE_URL}/storage/v1/object/public/Curriculos/${prof.curriculo_url}`;
+                    
+                    const cartao = document.createElement('div');
+                    cartao.className = 'cartao';
+                    cartao.innerHTML = `
+                        <h3>${prof.nome}</h3>
+                        <p><strong>Especialidade:</strong> ${prof.especialidade}</p>
+                        <p><strong>Email:</strong> ${prof.email}</p>
+                        <p><strong>Telemóvel:</strong> ${prof.telemovel}</p>
+                        <p><strong>Currículo:</strong> <a href="${urlCurriculo}" target="_blank" style="color: var(--clay);">Ver Documento</a></p>
+                        <button class="btn-aprovar" onclick="aprovarProfissional(${prof.id}, '${prof.nome}', '${prof.email}')">✓ Aprovar e Enviar Email</button>
+                    `;
+                    grid.appendChild(cartao);
+                });
+            }
+        }
+
+        // Função mágica de 1 clique
+        async function aprovarProfissional(id, nome, email) {
+            
+            Swal.fire({
+                title: 'A processar...',
+                text: 'A atualizar a base de dados e a enviar o email de aprovação.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
+
+            try {
+                // 1. Mudar estado no Supabase para aprovado = true
+                const { error: updateError } = await baseDados
+                    .from('profissionais')
+                    .update({ aprovado: true })
+                    .eq('id', id);
+
+                if (updateError) throw updateError;
+
+                // 2. Disparar Email de Boas-vindas
+                // ATENÇÃO: MUDA AQUI O ID DO NOVO TEMPLATE!
+                const templateAprovacao = "COLA_AQUI_O_TEU_NOVO_TEMPLATE_DE_APROVACAO"; 
+                
+                await emailjs.send("service_xqo1u2b", templateAprovacao, {
+                    nome_profissional: nome,
+                    email_profissional: email
+                });
+
+                // 3. Sucesso!
+                Swal.fire('Aprovado!', `${nome} faz agora parte da equipa e já recebeu o email.`, 'success');
+                
+                // Recarregar a lista
+                carregarPendentes();
+
+            } catch (erro) {
+                console.error(erro);
+                Swal.fire('Erro', 'Ocorreu um erro ao aprovar o profissional.', 'error');
+            }
+        }
+
+        // Carregar a lista logo que a página abre
+        carregarPendentes();
+    </script>
+</body>
+</html>
