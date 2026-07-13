@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        :root { --ink: #1C2118; --cream: #F7F4EC; --sage: #8A9A5B; --clay: #B8895E; }
+        :root { --ink: #1C2118; --cream: #F7F4EC; --sage: #8A9A5B; --clay: #B8895E; --red: #e74c3c; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: var(--cream); color: var(--ink); padding: 40px; }
         
@@ -25,8 +25,19 @@
         .cartao p { margin-bottom: 8px; font-size: 14px; }
         .cartao strong { font-weight: 600; color: var(--ink); }
         
-        .btn-aprovar { background: var(--sage); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 16px; }
+        /* Novos estilos para os botões lado a lado */
+        .btn-acoes { display: flex; gap: 10px; margin-top: 16px; }
+        
+        .btn-aprovar, .btn-recusar { 
+            border: none; padding: 12px; border-radius: 8px; font-size: 14px; 
+            font-weight: 600; cursor: pointer; transition: 0.2s; flex: 1; color: white;
+        }
+        
+        .btn-aprovar { background: var(--sage); }
         .btn-aprovar:hover { background: #6b7a42; }
+        
+        .btn-recusar { background: var(--red); opacity: 0.9; }
+        .btn-recusar:hover { opacity: 1; }
         
         .mensagem-vazio { text-align: center; color: #666; font-size: 18px; margin-top: 50px; display: none; }
     </style>
@@ -52,7 +63,7 @@
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Função para carregar quem está pendente (aprovado: false)
+        // Função para carregar quem está pendente
         async function carregarPendentes() {
             const grid = document.getElementById('lista-candidatos');
             const vazio = document.getElementById('vazio');
@@ -70,7 +81,6 @@
             } else {
                 vazio.style.display = 'none';
                 data.forEach(prof => {
-                    // Criar link do currículo no cofre
                     const urlCurriculo = `${SUPABASE_URL}/storage/v1/object/public/Curriculos/${prof.curriculo_url}`;
                     
                     const cartao = document.createElement('div');
@@ -81,54 +91,76 @@
                         <p><strong>Email:</strong> ${prof.email}</p>
                         <p><strong>Telemóvel:</strong> ${prof.telemovel}</p>
                         <p><strong>Currículo:</strong> <a href="${urlCurriculo}" target="_blank" style="color: var(--clay);">Ver Documento</a></p>
-                        <button class="btn-aprovar" onclick="aprovarProfissional(${prof.id}, '${prof.nome}', '${prof.email}')">✓ Aprovar e Enviar Email</button>
+                        
+                        <div class="btn-acoes">
+                            <button class="btn-aprovar" onclick="aprovarProfissional(${prof.id}, '${prof.nome}', '${prof.email}')">✓ Aprovar</button>
+                            <button class="btn-recusar" onclick="recusarProfissional(${prof.id}, '${prof.nome}')">✗ Recusar</button>
+                        </div>
                     `;
                     grid.appendChild(cartao);
                 });
             }
         }
 
-        // Função mágica de 1 clique
+        // Função de Aprovar
         async function aprovarProfissional(id, nome, email) {
-            
             Swal.fire({
                 title: 'A processar...',
-                text: 'A atualizar a base de dados e a enviar o email de aprovação.',
+                text: 'A aprovar candidato e a enviar email...',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading() }
             });
 
             try {
-                // 1. Mudar estado no Supabase para aprovado = true
-                const { error: updateError } = await baseDados
-                    .from('profissionais')
-                    .update({ aprovado: true })
-                    .eq('id', id);
-
+                const { error: updateError } = await baseDados.from('profissionais').update({ aprovado: true }).eq('id', id);
                 if (updateError) throw updateError;
 
-                // 2. Disparar Email de Boas-vindas
-                // ATENÇÃO: MUDA AQUI O ID DO NOVO TEMPLATE!
-                const templateAprovacao = "template_rew7noa"; 
+                // ATENÇÃO: NÃO TE ESQUEÇAS DE COLAR AQUI O TEU TEMPLATE ID DE APROVAÇÃO
+                const templateAprovacao = "COLA_AQUI_O_TEU_NOVO_TEMPLATE_DE_APROVACAO"; 
                 
                 await emailjs.send("service_xqo1u2b", templateAprovacao, {
                     nome_profissional: nome,
                     email_profissional: email
                 });
 
-                // 3. Sucesso!
-                Swal.fire('Aprovado!', `${nome} faz agora parte da equipa e já recebeu o email.`, 'success');
-                
-                // Recarregar a lista
+                Swal.fire('Aprovado!', `${nome} foi aceite com sucesso.`, 'success');
                 carregarPendentes();
-
             } catch (erro) {
                 console.error(erro);
                 Swal.fire('Erro', 'Ocorreu um erro ao aprovar o profissional.', 'error');
             }
         }
 
-        // Carregar a lista logo que a página abre
+        // Função NOVA de Recusar (Apaga a linha do Supabase)
+        async function recusarProfissional(id, nome) {
+            const confirmacao = await Swal.fire({
+                title: 'Recusar Candidato?',
+                text: `Tem a certeza que deseja eliminar a candidatura de ${nome}? Esta ação não pode ser desfeita.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#95a5a6',
+                confirmButtonText: 'Sim, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (confirmacao.isConfirmed) {
+                Swal.fire({ title: 'A apagar...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                try {
+                    const { error } = await baseDados.from('profissionais').delete().eq('id', id);
+                    if (error) throw error;
+
+                    Swal.fire('Eliminado!', 'A candidatura foi removida.', 'success');
+                    carregarPendentes();
+                } catch (erro) {
+                    console.error(erro);
+                    Swal.fire('Erro', 'Ocorreu um erro ao eliminar a candidatura.', 'error');
+                }
+            }
+        }
+
+        // Iniciar
         carregarPendentes();
     </script>
 </body>
