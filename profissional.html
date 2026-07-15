@@ -17,27 +17,40 @@
         
         .header-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid rgba(247, 244, 236, 0.1); padding-bottom: 20px; }
         .header-painel h1 { font-family: "Fraunces", serif; font-size: 32px; color: var(--clay); }
-        .btn-voltar { color: var(--cream); text-decoration: none; font-size: 14px; opacity: 0.8; }
+        .perfil-info { display: flex; align-items: center; gap: 15px; }
+        .btn-voltar { color: var(--cream); text-decoration: none; font-size: 14px; opacity: 0.8; transition: 0.2s; }
+        .btn-voltar:hover { opacity: 1; color: var(--sage); }
         
         h2.seccao-titulo { font-family: "Fraunces", serif; color: var(--sage); margin: 40px 0 20px; font-size: 24px; border-bottom: 1px dashed rgba(138, 154, 91, 0.3); padding-bottom: 10px; }
         
-        .grid-trabalhos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        .cartao-trabalho { background: var(--ink-light); border: 1px solid rgba(247, 244, 236, 0.1); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; }
-        .cartao-topo { display: flex; justify-content: space-between; margin-bottom: 16px; }
-        .tag-tipo { background: rgba(138, 154, 91, 0.2); color: var(--sage); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .grid-trabalhos { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .cartao-trabalho { background: var(--ink-light); border: 1px solid rgba(247, 244, 236, 0.1); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s; }
+        .cartao-trabalho:hover { transform: translateY(-4px); border-color: rgba(138, 154, 91, 0.5); }
+        
+        .cartao-topo { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
+        .tag-tipo { background: rgba(138, 154, 91, 0.2); color: var(--sage); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .cartao-trabalho h3 { font-family: "Fraunces", serif; font-size: 22px; margin-bottom: 8px; }
-        .cartao-trabalho p { font-size: 15px; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; }
-        .cartao-trabalho strong { display: block; margin-bottom: 10px; font-size: 13px; color: var(--clay); }
+        .cartao-trabalho p { font-size: 15px; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; background: rgba(0,0,0,0.15); padding: 15px; border-radius: 8px; }
         
-        .btn-aceitar { background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
-        .btn-aceitar:hover { background: #9db267; }
+        /* Zona de Orçamento (Para Pedidos Pendentes) */
+        .zona-orcamento { display: flex; gap: 10px; margin-top: auto; }
+        .input-preco { flex: 0.4; background: rgba(0,0,0,0.3); border: 1px solid rgba(247, 244, 236, 0.2); color: var(--cream); padding: 12px 15px; border-radius: 8px; font-family: "Space Mono", monospace; font-size: 16px; outline: none; transition: 0.2s; }
+        .input-preco:focus { border-color: var(--sage); background: rgba(0,0,0,0.5); }
+        .input-preco::placeholder { color: rgba(247, 244, 236, 0.3); }
         
-        /* NOVO ESTILO DO BOTÃO CONCLUIR */
-        .btn-concluir { background: transparent; color: var(--clay); border: 2px solid var(--clay); padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn-enviar { flex: 0.6; background: var(--sage); color: var(--ink); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-enviar:hover { background: #9db267; }
+        .btn-enviar:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* Estilos para Trabalhos Aceites */
+        .info-preco-aceite { margin-bottom: 15px; padding: 12px; background: rgba(184, 137, 94, 0.1); border-left: 3px solid var(--clay); border-radius: 4px; font-size: 14px; display: flex; justify-content: space-between; }
+        .info-preco-aceite strong { color: var(--clay); }
+        
+        .btn-concluir { background: transparent; color: var(--clay); border: 2px solid var(--clay); padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-concluir:hover { background: var(--clay); color: var(--cream); }
         
-        .aviso-vazio { opacity: 0.5; font-style: italic; grid-column: 1 / -1; }
+        .aviso-vazio { opacity: 0.5; font-style: italic; grid-column: 1 / -1; background: rgba(0,0,0,0.2); padding: 30px; border-radius: 12px; text-align: center; border: 1px dashed rgba(247, 244, 236, 0.1); }
     </style>
 </head>
 <body>
@@ -45,95 +58,193 @@
     <div class="container">
         <header class="header-painel">
             <h1><i class="fa-solid fa-person-digging"></i> O Meu Painel</h1>
-            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Sair do Painel</a>
+            <div class="perfil-info">
+                <span style="font-size: 14px; opacity: 0.8;" id="nome-profissional-topo">A carregar perfil...</span>
+                <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
         </header>
 
-        <h2 class="seccao-titulo">Novos Pedidos na sua Zona</h2>
-        <div id="lista-pendentes" class="grid-trabalhos">A carregar...</div>
+        <h2 class="seccao-titulo"><i class="fa-solid fa-bolt"></i> Novos Pedidos na sua Zona</h2>
+        <div id="lista-pendentes" class="grid-trabalhos">A procurar trabalhos na base de dados...</div>
 
-        <h2 class="seccao-titulo" style="color: var(--clay);">Trabalhos em Curso (Aceites)</h2>
-        <div id="lista-aceites" class="grid-trabalhos">A carregar...</div>
+        <h2 class="seccao-titulo" style="color: var(--clay);"><i class="fa-solid fa-briefcase"></i> Trabalhos em Curso (Aceites)</h2>
+        <div id="lista-aceites" class="grid-trabalhos">A carregar o seu histórico...</div>
     </div>
 
     <script>
+        // 1. Configuração do Supabase
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // VERIFICAR SEGURANÇA LOGO AO INÍCIO
+        // 2. Simulação de Sessão do Profissional 
+        // (Será substituído pelo ID real do Auth futuramente)
+        const meuPerfil = {
+            id: 1,
+            nome: "João Silva",
+            telefone: "912345678"
+        };
+        
+        document.getElementById('nome-profissional-topo').innerHTML = `Olá, <strong>${meuPerfil.nome}</strong>`;
+
+        // 3. Verificação de Segurança
         async function verificarSeguranca() {
+            // Se já tiveres o Auth a funcionar, manténs isto. 
+            // Para testes, vamos carregar direto.
             const { data } = await baseDados.auth.getSession();
-            if (!data.session) window.location.href = "login.html";
-            else carregarTrabalhos();
+            // if (!data.session) window.location.href = "login.html";
+            // else carregarTrabalhos();
+            carregarTrabalhos();
         }
 
+        // 4. Carregar todos os trabalhos relevantes
         async function carregarTrabalhos() {
             const divPendentes = document.getElementById('lista-pendentes');
             const divAceites = document.getElementById('lista-aceites');
 
-            const { data: pedidos, error } = await baseDados.from('pedidos').select('*').order('id', { ascending: false });
+            // Busca pedidos pendentes E os pedidos aceites por este profissional
+            const { data: pedidos, error } = await baseDados
+                .from('pedidos')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error("Erro Supabase:", error);
+                divPendentes.innerHTML = '<div class="aviso-vazio">Erro de ligação à base de dados.</div>';
+                return;
+            }
 
             divPendentes.innerHTML = '';
             divAceites.innerHTML = '';
-
             let countPendentes = 0;
             let countAceites = 0;
 
-            if (pedidos) {
-                pedidos.forEach(pedido => {
-                    const estado = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
-                    
-                    // Se estiver concluído, o cartão nem sequer é desenhado no ecrã (desaparece)
-                    if (estado === 'CONCLUIDO') return; 
+            pedidos.forEach(pedido => {
+                const estado = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
+                
+                // Ignorar concluídos
+                if (estado === 'CONCLUIDO') return; 
 
-                    const isAceite = estado === 'ACEITE';
-                    
-                    // Se estiver aceite, mostra o botão "Concluir Trabalho"
-                    let htmlBotao = isAceite 
-                        ? `<button class="btn-concluir" onclick="concluirTrabalho(event, ${pedido.id})"><i class="fa-solid fa-check-double"></i> Concluir Trabalho</button>` 
-                        : `<button class="btn-aceitar" onclick="aceitarTrabalho(event, ${pedido.id})">Aceitar Trabalho</button>`;
+                const isAceite = estado === 'ACEITE';
+                
+                // Se estiver aceite e NÃO for deste profissional, ignora
+                if (isAceite && pedido.id_profissional !== meuPerfil.id) return;
 
-                    const cartao = `
-                        <div class="cartao-trabalho">
-                            <div class="cartao-topo">
-                                <span class="tag-tipo">${pedido.tipo_servico || 'Serviço'}</span>
-                                <span style="font-family: monospace; opacity: 0.5;">ID: #${pedido.id}</span>
-                            </div>
-                            <h3>${pedido.titulo}</h3>
-                            <p>${pedido.descricao}</p>
-                            ${htmlBotao}
+                // Construção dinâmica da parte inferior do cartão
+                let conteudoInferior = '';
+                
+                if (isAceite) {
+                    conteudoInferior = `
+                        <div class="info-preco-aceite">
+                            <span>Orçamento Acordado:</span>
+                            <strong>${pedido.preco_total ? pedido.preco_total.toFixed(2) + ' €' : '--'}</strong>
+                        </div>
+                        <button class="btn-concluir" onclick="concluirTrabalho(event, ${pedido.id})">
+                            <i class="fa-solid fa-check-double"></i> Marcar como Concluído
+                        </button>
+                    `;
+                } else {
+                    conteudoInferior = `
+                        <div class="zona-orcamento">
+                            <input type="number" id="preco-${pedido.id}" class="input-preco" placeholder="Preço (€)" min="1" step="0.50">
+                            <button class="btn-enviar" onclick="enviarOrcamento(event, ${pedido.id})">
+                                <i class="fa-solid fa-paper-plane"></i> Orçamento
+                            </button>
                         </div>
                     `;
+                }
 
-                    if (isAceite) {
-                        divAceites.innerHTML += cartao;
-                        countAceites++;
-                    } else {
-                        divPendentes.innerHTML += cartao;
-                        countPendentes++;
-                    }
-                });
+                // Montar o Cartão Completo
+                const cartao = `
+                    <div class="cartao-trabalho">
+                        <div class="cartao-topo">
+                            <span class="tag-tipo">${pedido.tipo_servico || 'Serviço Geral'}</span>
+                            <span style="font-family: monospace; opacity: 0.5;">REF #${pedido.id}</span>
+                        </div>
+                        <h3>${pedido.titulo || 'Sem título'}</h3>
+                        <p>${pedido.descricao || 'O cliente não forneceu descrição detalhada.'}</p>
+                        ${conteudoInferior}
+                    </div>
+                `;
+
+                if (isAceite) {
+                    divAceites.innerHTML += cartao;
+                    countAceites++;
+                } else {
+                    divPendentes.innerHTML += cartao;
+                    countPendentes++;
+                }
+            });
+
+            if (countPendentes === 0) divPendentes.innerHTML = '<div class="aviso-vazio">Não há novos pedidos na sua zona de momento.</div>';
+            if (countAceites === 0) divAceites.innerHTML = '<div class="aviso-vazio">Não tem trabalhos em curso atualmente.</div>';
+        }
+
+        // 5. Função para enviar o orçamento à BD
+        async function enviarOrcamento(event, idPedido) {
+            const btn = event.currentTarget;
+            const inputPreco = document.getElementById(`preco-${idPedido}`);
+            const precoInserido = parseFloat(inputPreco.value);
+
+            if (!precoInserido || precoInserido <= 0) {
+                alert("Por favor, insira um preço válido para o serviço.");
+                inputPreco.focus();
+                return;
             }
 
-            if (countPendentes === 0) divPendentes.innerHTML = '<div class="aviso-vazio">Não há novos pedidos de momento.</div>';
-            if (countAceites === 0) divAceites.innerHTML = '<div class="aviso-vazio">Ainda não aceitou nenhum trabalho.</div>';
+            // Estado de Loading
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A enviar...';
+            btn.disabled = true;
+            inputPreco.disabled = true;
+
+            // Atualização no Supabase (Muda estado e guarda os 4 dados novos)
+            const { error } = await baseDados
+                .from('pedidos')
+                .update({ 
+                    preco_total: precoInserido,
+                    id_profissional: meuPerfil.id,
+                    nome_profissional: meuPerfil.nome,
+                    telefone_profissional: meuPerfil.telefone,
+                    estado: 'aceite'
+                })
+                .eq('id', idPedido);
+
+            if (error) {
+                alert("Erro ao enviar orçamento. Verifique a ligação.");
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+                inputPreco.disabled = false;
+            } else {
+                // Sucesso! Recarrega os quadros para mover o cartão de secção
+                carregarTrabalhos();
+            }
         }
 
-        async function aceitarTrabalho(event, id) {
-            event.target.textContent = "A aceitar...";
-            const { error } = await baseDados.from('pedidos').update({ estado: 'aceite' }).eq('id', id);
-            if (!error) carregarTrabalhos();
-            else alert("Erro ao aceitar.");
+        // 6. Função para fechar o trabalho
+        async function concluirTrabalho(event, idPedido) {
+            const btn = event.currentTarget;
+            
+            if(!confirm("Tem a certeza que concluiu este trabalho?")) return;
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A finalizar...';
+            btn.disabled = true;
+
+            const { error } = await baseDados
+                .from('pedidos')
+                .update({ estado: 'concluido' })
+                .eq('id', idPedido);
+                
+            if (!error) {
+                carregarTrabalhos();
+            } else {
+                alert("Erro ao concluir o trabalho.");
+                btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Marcar como Concluído';
+                btn.disabled = false;
+            }
         }
 
-        // NOVA FUNÇÃO: CONCLUIR TRABALHO
-        async function concluirTrabalho(event, id) {
-            event.target.textContent = "A finalizar...";
-            const { error } = await baseDados.from('pedidos').update({ estado: 'concluido' }).eq('id', id);
-            if (!error) carregarTrabalhos();
-            else alert("Erro ao concluir.");
-        }
-
+        // Iniciar
         verificarSeguranca();
     </script>
 </body>
