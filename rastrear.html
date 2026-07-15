@@ -181,6 +181,7 @@
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let pedidoAtual = null;
 
         async function procurarPedido(event) {
             event.preventDefault(); 
@@ -210,6 +211,7 @@
         }
 
         function preencherCartao(pedido) {
+            pedidoAtual = pedido;
             const cartao = document.getElementById('cartao-principal');
             const estadoStr = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
             
@@ -285,16 +287,44 @@
             }
         }
 
-        function iniciarPagamento() {
-            const botao = document.getElementById('btn-stripe');
-            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
-            botao.style.opacity = '0.7';
-            botao.disabled = true;
+async function iniciarPagamento() {
+    if (!pedidoAtual) return;
 
-            // ATENÇÃO: Mantém aqui o teu link real que geraste no Stripe!
-            const linkStripe = "https://buy.stripe.com/test_bJe00b1Nr8asbywcxCasg00"; 
-            window.location.href = linkStripe;
+    const botao = document.getElementById('btn-stripe');
+    botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
+    botao.style.opacity = '0.7';
+    botao.disabled = true;
+
+    // A Matemática Mágica!
+    const precoTotal = pedidoAtual.preco_total || 0;
+    const valorSinal = precoTotal * 0.15;
+
+    try {
+        // Pede à nuvem para gerar o link único
+        const { data, error } = await baseDados.functions.invoke('pagar-sinal', {
+            body: {
+                pedido_id: pedidoAtual.id,
+                valor_sinal: valorSinal,
+                titulo_servico: pedidoAtual.titulo || 'Serviço PontoCerto'
+            }
+        });
+
+        if (error) throw error;
+        
+        // Se correu bem, envia o cliente para o Stripe com o valor exato!
+        if (data && data.url) {
+            window.location.href = data.url;
+        } else {
+            throw new Error("O Stripe não devolveu o link.");
         }
+    } catch (erro) {
+        console.error(erro);
+        alert("Ocorreu um erro ao gerar o pagamento. Tente novamente.");
+        botao.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança';
+        botao.style.opacity = '1';
+        botao.disabled = false;
+    }
+}
     </script>
 </body>
 </html>
