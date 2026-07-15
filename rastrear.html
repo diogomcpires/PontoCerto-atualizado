@@ -5,13 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seguir Pedido - PontoCerto</title>
     
-    <!-- Scripts Externos -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://js.stripe.com/v3/"></script> <!-- Adicionado Stripe -->
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
     
     <style>
@@ -30,14 +25,12 @@
         body { font-family: var(--font-body); background: var(--cream); color: var(--ink); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
         a { text-decoration: none; color: inherit; }
         
-        /* Cabeçalho Minimalista */
         .header { padding: 20px 40px; background: white; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-family: var(--font-display); font-size: 22px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--ink); }
         .logo i { color: var(--sage); }
         .btn-voltar { font-size: 14px; font-weight: 500; color: var(--ink-soft); transition: 0.2s; }
         .btn-voltar:hover { color: var(--ink); }
 
-        /* Área de Pesquisa Principal */
         .hero-tracker { text-align: center; padding: 60px 20px 40px; }
         .hero-tracker h1 { font-family: var(--font-display); font-size: 36px; margin-bottom: 12px; }
         .hero-tracker p { color: var(--ink-soft); font-size: 16px; margin-bottom: 30px; }
@@ -49,7 +42,6 @@
         .search-box button:hover { background: var(--sage-deep); }
         .search-box button:disabled { opacity: 0.7; cursor: wait; }
 
-        /* Cartão de Resultados */
         .resultado-container { max-width: 800px; margin: 0 auto 60px; padding: 0 20px; display: none; animation: fadeIn 0.5s ease; }
         .cartao-estado { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.05); border: 1px solid var(--line); transition: all 0.3s ease; }
         
@@ -59,7 +51,6 @@
         .servico-titulo { font-family: var(--font-display); font-size: 24px; }
         .estado-badge { padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Barra de Progresso Visual (Stepper) */
         .stepper { display: flex; justify-content: space-between; position: relative; margin-bottom: 50px; }
         .stepper::before { content: ''; position: absolute; top: 24px; left: 10%; right: 10%; height: 3px; background: var(--cream-deep); z-index: 1; border-radius: 3px; }
         .linha-progresso { position: absolute; top: 24px; left: 10%; height: 3px; background: var(--sage); z-index: 2; border-radius: 3px; transition: width 0.8s ease; width: 0%; }
@@ -68,54 +59,43 @@
         .step-icon { width: 50px; height: 50px; background: white; border: 3px solid var(--cream-deep); border-radius: 50%; display: grid; place-items: center; font-size: 18px; color: #999; transition: all 0.4s ease; }
         .step-label { font-size: 14px; font-weight: 600; color: #999; text-align: center; transition: 0.4s; }
         
-        /* Estados do Stepper */
         .step.active .step-icon { border-color: var(--sage); background: var(--sage); color: white; box-shadow: 0 0 0 6px rgba(138, 154, 91, 0.1); }
         .step.active .step-label { color: var(--ink); }
         
-        /* Mensagem Principal Dinâmica */
         .mensagem-box { padding: 24px; border-radius: 16px; display: flex; gap: 20px; align-items: flex-start; }
         .mensagem-box i { font-size: 28px; margin-top: 4px; }
         .mensagem-texto h4 { font-family: var(--font-display); font-size: 20px; margin-bottom: 6px; }
         .mensagem-texto p { font-size: 15px; opacity: 0.85; }
 
-        /* Nova Secção de Pagamento (Stripe) */
         .zona-pagamento { display: none; margin-top: 30px; padding-top: 30px; border-top: 1px dashed var(--line); text-align: center; animation: fadeIn 0.8s ease; }
         .zona-pagamento h4 { font-family: var(--font-display); font-size: 22px; color: var(--ink); margin-bottom: 8px; }
-        .zona-pagamento p { color: var(--ink-soft); font-size: 15px; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; }
-        .destaque-valor { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--ink); display: block; margin: 15px 0; }
+        .zona-pagamento p { color: var(--ink-soft); font-size: 15px; margin-bottom: 20px; }
         
-        .btn-pagar { background: var(--clay); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-family: var(--font-body); font-size: 16px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; }
+        /* NOVO DESIGN DO RECIBO 15% */
+        .caixa-recibo { background: #fcfcfc; border: 1px solid var(--line); padding: 20px; border-radius: 12px; max-width: 350px; margin: 0 auto 24px; text-align: left; }
+        .linha-recibo { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+        .linha-recibo.destaque { color: var(--clay); font-weight: 700; font-size: 18px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ccc; }
+        .linha-recibo.pequeno { font-size: 13px; color: #666; margin-top: 12px; }
+        
+        .btn-pagar { background: var(--clay); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-family: var(--font-body); font-size: 16px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; width: 100%; max-width: 350px; justify-content: center; }
         .btn-pagar:hover { background: var(--clay-deep); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(184, 137, 94, 0.3); }
 
-        /* Estilos de Cores por Estado */
         .theme-pendente .estado-badge { background: #FFF3E0; color: #E65100; border: 1px solid #FFB74D; }
         .theme-pendente .mensagem-box { background: #FFF3E0; color: #E65100; border: 1px dashed #FFB74D; }
         
         .theme-aceite .estado-badge { background: #E3F2FD; color: #1565C0; border: 1px solid #64B5F6; }
         .theme-aceite .mensagem-box { background: #E3F2FD; color: #1565C0; border: 1px dashed #64B5F6; }
-        .theme-aceite { border: 2px solid var(--sage); } /* Destaque no cartão inteiro */
+        .theme-aceite { border: 2px solid var(--sage); }
         
         .theme-concluido .estado-badge { background: #E8F5E9; color: #2E7D32; border: 1px solid #81C784; }
         .theme-concluido .mensagem-box { background: #E8F5E9; color: #2E7D32; border: 1px dashed #81C784; }
 
-        /* Estado Não Encontrado */
         .not-found { text-align: center; padding: 40px; background: white; border-radius: 24px; border: 1px solid #FFCDD2; max-width: 600px; margin: 0 auto; display: none; }
         .not-found i { font-size: 40px; color: #D32F2F; margin-bottom: 16px; }
-        .not-found h3 { font-family: var(--font-display); font-size: 22px; color: #D32F2F; margin-bottom: 8px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Rodapé Simples */
         .footer { margin-top: auto; padding: 30px; text-align: center; color: var(--ink-soft); font-size: 13px; border-top: 1px solid var(--line); }
-
-        @media (max-width: 600px) {
-            .search-box { flex-direction: column; border-radius: 16px; padding: 12px; }
-            .search-box input { border-bottom: 1px solid var(--line); margin-bottom: 10px; }
-            .search-box button { padding: 15px; border-radius: 12px; }
-            .cartao-header { flex-direction: column; gap: 16px; }
-            .step-label { font-size: 12px; }
-            .mensagem-box { flex-direction: column; gap: 12px; }
-        }
     </style>
 </head>
 <body>
@@ -130,15 +110,14 @@
         <p>Acompanhe o estado do seu serviço em tempo real.</p>
         
         <form class="search-box" onsubmit="procurarPedido(event)">
-            <input type="number" id="id-pedido" placeholder="Introduza o ID do Pedido (Ex: 14)" required>
+            <input type="number" id="id-pedido" placeholder="Introduza o ID do Pedido (Ex: 35)" required>
             <button type="submit" id="btn-buscar"><i class="fa-solid fa-magnifying-glass"></i> Consultar</button>
         </form>
     </section>
 
     <div id="erro-container" class="not-found">
         <i class="fa-solid fa-circle-exclamation"></i>
-        <h3>Pedido não encontrado</h3>
-        <p>Verifique se inseriu o número corretamente. Caso tenha feito o pedido recentemente, tente novamente num minuto.</p>
+        <h3 style="font-family: var(--font-display); color: #D32F2F;">Pedido não encontrado</h3>
     </div>
 
     <main id="resultado-container" class="resultado-container">
@@ -148,7 +127,6 @@
                 <div class="info-pedido">
                     <span class="tag-id" id="ui-id">PEDIDO #00</span>
                     <h2 class="servico-titulo" id="ui-titulo">Nome do Serviço</h2>
-                    <span style="font-size: 14px; color: #666;" id="ui-tipo">Tipo de Serviço</span>
                 </div>
                 <div class="estado-badge" id="ui-badge">ESTADO</div>
             </div>
@@ -160,12 +138,10 @@
                     <div class="step-icon"><i class="fa-solid fa-clipboard-list"></i></div>
                     <div class="step-label">Pedido<br>Recebido</div>
                 </div>
-                
                 <div class="step step-2" id="step-aceite">
                     <div class="step-icon"><i class="fa-solid fa-user-check"></i></div>
                     <div class="step-label">Profissional<br>Atribuído</div>
                 </div>
-                
                 <div class="step step-3" id="step-concluido">
                     <div class="step-icon"><i class="fa-solid fa-check-double"></i></div>
                     <div class="step-label">Serviço<br>Concluído</div>
@@ -175,17 +151,19 @@
             <div class="mensagem-box" id="ui-msg-box">
                 <i id="ui-msg-icon" class="fa-solid fa-hourglass-half"></i>
                 <div class="mensagem-texto">
-                    <h4 id="ui-msg-titulo">Título da Mensagem</h4>
-                    <p id="ui-msg-desc">Descrição do que está a acontecer neste momento com o seu pedido.</p>
+                    <h4 id="ui-msg-titulo">Título</h4>
+                    <p id="ui-msg-desc">Descrição.</p>
                 </div>
             </div>
 
             <!-- ZONA DE PAGAMENTO STRIPE -->
             <div id="zona-pagamento" class="zona-pagamento">
                 <h4>Tranque a data do seu serviço</h4>
-                <p>Para garantir que o profissional bloqueia a agenda para si, efetue o pagamento do sinal. O restante valor será pago no final do serviço.</p>
+                <p>Para desbloquear o contacto direto com o profissional, efetue o pagamento da taxa de reserva.</p>
                 
-                <span class="destaque-valor">15,00 €</span>
+                <div id="recibo-calculo">
+                    <!-- O javascript vai desenhar a caixa dos 15% aqui -->
+                </div>
                 
                 <button id="btn-stripe" class="btn-pagar" onclick="iniciarPagamento()">
                     <i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança
@@ -200,17 +178,12 @@
     </footer>
 
     <script>
-        // 1. Ligar ao Supabase
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 2. Ligar ao Stripe (A tua Chave Pública)
-        const stripe = Stripe('pk_test_51Tsqxb0cYnpOjO6VtJeTZybj1VvlhL3jGhrmXwtmF0Fv8HWLtF30pvedZLwMWf5NzR9pTYbJEnV9S1IZ9PkP2uuz00rA4uB9fs');
-
         async function procurarPedido(event) {
             event.preventDefault(); 
-            
             const id = document.getElementById('id-pedido').value;
             const btn = document.getElementById('btn-buscar');
             const resultContainer = document.getElementById('resultado-container');
@@ -223,7 +196,6 @@
             resultContainer.style.display = 'none';
             errorContainer.style.display = 'none';
 
-            // Chamada à Base de Dados
             const { data: pedido, error } = await baseDados.from('pedidos').select('*').eq('id', id).single();
 
             btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Consultar';
@@ -241,18 +213,14 @@
             const cartao = document.getElementById('cartao-principal');
             const estadoStr = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
             
-            // Limpar Interface
             cartao.className = 'cartao-estado';
             document.getElementById('step-aceite').classList.remove('active');
             document.getElementById('step-concluido').classList.remove('active');
-            document.getElementById('zona-pagamento').style.display = 'none'; // Esconder pagamento por defeito
+            document.getElementById('zona-pagamento').style.display = 'none'; 
 
-            // Dados Básicos
             document.getElementById('ui-id').textContent = `PEDIDO #${pedido.id}`;
             document.getElementById('ui-titulo').textContent = pedido.titulo;
-            document.getElementById('ui-tipo').textContent = pedido.tipo_servico || 'Serviço Geral';
 
-            // Elementos
             const badge = document.getElementById('ui-badge');
             const progresso = document.getElementById('ui-progress');
             const stepAceite = document.getElementById('step-aceite');
@@ -261,17 +229,15 @@
             const msgTitulo = document.getElementById('ui-msg-titulo');
             const msgDesc = document.getElementById('ui-msg-desc');
 
-            // Lógica de Estados
             if (estadoStr === 'CONCLUIDO') {
                 cartao.classList.add('theme-concluido');
                 badge.textContent = "CONCLUÍDO";
                 progresso.style.width = "100%"; 
                 stepAceite.classList.add('active');
                 stepConcluido.classList.add('active');
-                
                 msgIcon.className = "fa-solid fa-star";
                 msgTitulo.textContent = "Serviço Fechado!";
-                msgDesc.textContent = "O profissional marcou este trabalho como concluído. Obrigado por confiar na PontoCerto para cuidar do seu espaço.";
+                msgDesc.textContent = "O profissional marcou este trabalho como concluído. Obrigado por confiar na PontoCerto!";
 
             } else if (estadoStr === 'ACEITE') {
                 cartao.classList.add('theme-aceite');
@@ -279,37 +245,56 @@
                 progresso.style.width = "50%"; 
                 stepAceite.classList.add('active');
                 
-                msgIcon.className = "fa-solid fa-handshake-angle";
-                msgTitulo.textContent = "Temos o profissional ideal para si!";
-                msgDesc.textContent = "Um especialista da sua zona aceitou o pedido e está pronto para avançar. Para confirmar a marcação e receber os contactos, efetue o pagamento do sinal abaixo.";
+                // NOVIDADE: Ler os dados da base de dados e fazer a matemática!
+                const precoTotal = pedido.preco_total || 0;
+                const valorSinal = precoTotal * 0.15; // Calcula 15%
+                const valorRestante = precoTotal - valorSinal; // O que sobra
 
-                // MOSTRAR A ZONA DE PAGAMENTO STRIPE
+                msgIcon.className = "fa-solid fa-handshake-angle";
+                // Mostra o teu nome verdadeiro que veio da Base de Dados!
+                msgTitulo.textContent = `Orçamento de ${pedido.nome_profissional || 'um Profissional'}`;
+                msgDesc.textContent = `O seu pedido foi analisado e avaliado. Pague o sinal para trancar a agenda e receber o número de telemóvel direto do profissional.`;
+
+                // Desenhar a caixa de recibo com a matemática de 15%
+                document.getElementById('recibo-calculo').innerHTML = `
+                    <div class="caixa-recibo">
+                        <div class="linha-recibo">
+                            <span>Valor Orçamentado:</span>
+                            <strong>${precoTotal.toFixed(2)} €</strong>
+                        </div>
+                        <div class="linha-recibo destaque">
+                            <span>Sinal a Pagar (15%):</span>
+                            <span>${valorSinal.toFixed(2)} €</span>
+                        </div>
+                        <div class="linha-recibo pequeno">
+                            <span>A pagar ao profissional no final:</span>
+                            <strong>${valorRestante.toFixed(2)} €</strong>
+                        </div>
+                    </div>
+                `;
+
                 document.getElementById('zona-pagamento').style.display = 'block';
 
             } else {
                 cartao.classList.add('theme-pendente');
                 badge.textContent = "A AGUARDAR";
                 progresso.style.width = "0%"; 
-                
                 msgIcon.className = "fa-solid fa-radar fa-beat-fade";
                 msgTitulo.textContent = "A procurar profissionais...";
-                msgDesc.textContent = "O seu pedido já está no quadro de trabalhos da sua zona. Assim que um profissional aceitar, será notificado para confirmar a reserva.";
+                msgDesc.textContent = "O seu pedido já está no quadro de trabalhos da sua zona. Assim que um profissional aceitar, será notificado.";
             }
         }
 
-// 3. Função que chama a janela do Stripe
-function iniciarPagamento() {
-    const botao = document.getElementById('btn-stripe');
-    botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
-    botao.style.opacity = '0.7';
-    botao.disabled = true;
+        function iniciarPagamento() {
+            const botao = document.getElementById('btn-stripe');
+            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
+            botao.style.opacity = '0.7';
+            botao.disabled = true;
 
-    
-    const linkStripe = "https://buy.stripe.com/test_bJe00b1Nr8asbywcxCasg00";
-    
-    // Envia o cliente diretamente para o checkout seguro
-    window.location.href = linkStripe;
-}
+            // ATENÇÃO: Mantém aqui o teu link real que geraste no Stripe!
+            const linkStripe = "COLA_AQUI_O_TEU_LINK_DE_PAGAMENTO"; 
+            window.location.href = linkStripe;
+        }
     </script>
 </body>
 </html>
