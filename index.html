@@ -6,10 +6,12 @@
     <meta name="description" content="PontoCerto liga clientes a profissionais locais. Começamos por jardinagem, limpeza de terrenos, poda, abate e manutenção de espaços exteriores.">
     <title>PontoCerto - Serviços Locais, Começando por Espaços Exteriores</title>
 
+    <!-- Script do Supabase adicionado -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -801,14 +803,18 @@
                 <a href="#servicos">Serviços</a>
                 <a href="#como-funciona">Como funciona</a>
                 
-                <!-- AQUI ESTÁ O NOVO BOTÃO DA EQUIPA -->
                 <a href="equipa.html" style="font-weight: 600; color: var(--sage-deep);">
                     <i class="fa-solid fa-users"></i> A Nossa Equipa
                 </a>
 
                 <a href="rastrear.html" style="color: var(--clay); font-weight: 600;"><i class="fa-solid fa-magnifying-glass"></i> Rastrear Pedido</a>
+                
+                <!-- Novo Botão de Login / Sair que muda sozinho -->
+                <a href="login.html" class="auth-link" style="color: var(--clay); font-weight: 600; margin-left: 10px;">
+                    <i class="fa-solid fa-user"></i> A Carregar...
+                </a>
             </nav>
-            <a href="pedir.html" class="btn btn-primary btn-small">Pedir serviço</a>
+            <a href="login.html" class="btn btn-primary btn-small btn-pedir">Pedir serviço</a>
         </div>
     </header>
 
@@ -836,9 +842,9 @@
                 <h1>Encontre profissionais locais para tratar do que precisa.</h1>
                 <p class="hero-lead">A PontoCerto liga clientes a profissionais de confiança. Começamos pela jardinagem e limpeza de terrenos — para pedir orçamentos, comparar propostas e contratar alguém perto de si de forma simples.</p>
                 <div class="hero-actions">
-                    <a href="pedir.html" class="btn btn-primary btn-large">Preciso de um serviço <i class="fa-solid fa-arrow-right"></i></a>
-                    <a href="registar-profissional.html" class="btn btn-secondary btn-large">Quero ser Profissional</a>
-                    <a href="login.html" class="btn btn-tertiary btn-large"><i class="fa-solid fa-right-to-bracket"></i> Trabalhos Disponíveis</a>
+                    <!-- Apenas 2 Botões Mágicos (Removido o 3º Botão) -->
+                    <a href="login.html" class="btn btn-primary btn-large btn-pedir">Preciso de um serviço <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="login.html" class="btn btn-secondary btn-large btn-prof">Quero ser Profissional</a>
                 </div>
                 <div class="hero-trust">
                     <i class="fa-solid fa-seedling"></i>
@@ -903,7 +909,7 @@
                         <li><i class="fa-solid fa-check"></i> Poda de árvores e arbustos</li>
                         <li><i class="fa-solid fa-check"></i> Tratamento, plantação e manutenção</li>
                     </ul>
-                    <a href="pedir.html" class="text-link">Pedir serviço de jardinagem <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="login.html" class="text-link btn-pedir">Pedir serviço de jardinagem <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
                 <div class="gateway-card gateway-card--alt tilt-card">
@@ -915,7 +921,7 @@
                         <li><i class="fa-solid fa-tractor"></i> Desmatação e roço de mato</li>
                         <li><i class="fa-solid fa-truck"></i> Remoção de entulho verde</li>
                     </ul>
-                    <a href="pedir.html" class="text-link">Pedir limpeza de terreno <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="login.html" class="text-link btn-pedir">Pedir limpeza de terreno <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -1029,10 +1035,9 @@
                 <h2>Quer fazer parte da fase inicial?</h2>
                 <p>Estamos a construir a rede de clientes e profissionais da PontoCerto. Se precisa de um serviço ou presta serviços exteriores, este é o momento certo para entrar.</p>
                 <div class="hero-actions hero-actions--center">
-                    <a href="pedir.html" class="btn btn-primary btn-large">Pedir orçamento grátis</a>
-                    <a href="registar-profissional.html" class="btn btn-secondary btn-large">Quero ser Profissional</a>
+                    <a href="login.html" class="btn btn-primary btn-large btn-pedir">Pedir orçamento grátis</a>
+                    <a href="login.html" class="btn btn-secondary btn-large btn-prof">Quero ser Profissional</a>
                     
-                    <!-- BOTÃO ADICIONADO AQUI NA ZONA FINAL -->
                     <a href="equipa.html" class="btn btn-tertiary btn-large"><i class="fa-solid fa-users"></i> Conhecer a Equipa</a>
                 </div>
             </div>
@@ -1051,27 +1056,23 @@
                 <div class="footer-links">
                     <div>
                         <h4>Serviços</h4>
-                        <a href="pedir.html">Jardinagem</a>
-                        <a href="pedir.html">Limpeza de terrenos</a>
-                        <a href="pedir.html">Poda e abate</a>
+                        <a href="login.html" class="btn-pedir">Jardinagem</a>
+                        <a href="login.html" class="btn-pedir">Limpeza de terrenos</a>
+                        <a href="login.html" class="btn-pedir">Poda e abate</a>
                     </div>
                     <div>
                         <h4>Plataforma</h4>
                         <a href="#como-funciona">Como funciona</a>
                         
-                        <!-- BOTÃO ADICIONADO NO RODAPÉ -->
                         <a href="equipa.html"><i class="fa-solid fa-users"></i> A Nossa Equipa</a>
                         
-                        <a href="rastrear.html" style="font-weight: 600; color: var(--clay);"><i class="fa-solid fa-magnifying-glass"></i> Seguir Pedido</a>
-                        <a href="registar-profissional.html">Torne-se profissional</a>
-                        <a href="login.html">Login de profissionais</a>
+                        <a href="login.html" class="auth-link" style="font-weight: 600; color: var(--clay);"><i class="fa-solid fa-user"></i> Login / Registo</a>
+                        <a href="login.html" class="btn-prof">Torne-se profissional</a>
                         <a href="#em-breve">Novas categorias</a>
                     </div>
                     
-                    <!-- NOVA SECÇÃO DE CONTACTOS ADICIONADA AQUI -->
                     <div>
                         <h4>Contactos</h4>
-                        <!-- ATENÇÃO: Substitui o pontocertojardins@gmail.com pelo teu email verdadeiro -->
                         <a href="mailto:pontocertojardins@gmail.com" style="display: flex; align-items: center; gap: 8px; color: var(--clay); font-weight: 600;">
                             <i class="fa-solid fa-envelope"></i> pontocertojardins@gmail.com
                         </a>
@@ -1093,7 +1094,7 @@
     </footer>
 
     <script>
-        // Efeito 3D subtil no hero e nos cartões. Desliga automaticamente em dispositivos que preferem menos movimento.
+        // Efeito 3D subtil no hero e nos cartões
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (!prefersReducedMotion) {
@@ -1124,6 +1125,54 @@
                 });
             });
         }
+
+        // ==========================================
+        // MAGIA DO LOGIN NO SITE PRINCIPAL
+        // ==========================================
+        const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+        const supabaseBase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function verificarSessao() {
+            // Vai ver se existe alguma sessão no Supabase
+            const { data } = await supabaseBase.auth.getSession();
+            const utilizador = data.session?.user;
+
+            // Encontra todos os botões pela classe
+            const botoesPedir = document.querySelectorAll('.btn-pedir');
+            const botoesProf = document.querySelectorAll('.btn-prof');
+            const linksAuth = document.querySelectorAll('.auth-link');
+
+            if (utilizador) {
+                // COM SESSÃO INICIADA: Links apontam para os formulários
+                botoesPedir.forEach(b => b.href = "pedir.html");
+                botoesProf.forEach(b => b.href = "registar-profissional.html");
+                
+                // Muda o botão de login para "Sair da Conta"
+                linksAuth.forEach(link => {
+                    link.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> Sair da Conta';
+                    link.href = "#"; // Não vai para lado nenhum, apenas executa o clique
+                    link.onclick = async (e) => {
+                        e.preventDefault();
+                        await supabaseBase.auth.signOut();
+                        window.location.reload(); // Atualiza a página quando sai da conta
+                    };
+                });
+            } else {
+                // SEM SESSÃO: Os botões aparecem mas levam a pessoa a criar conta
+                botoesPedir.forEach(b => b.href = "login.html");
+                botoesProf.forEach(b => b.href = "login.html");
+                
+                // Deixa o link de autenticação como Login
+                linksAuth.forEach(link => {
+                    link.innerHTML = '<i class="fa-solid fa-user"></i> Entrar / Registar';
+                    link.href = "login.html";
+                });
+            }
+        }
+
+        // Corre a verificação assim que a página carrega
+        verificarSessao();
     </script>
 </body>
 </html>
