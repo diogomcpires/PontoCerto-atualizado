@@ -33,10 +33,14 @@
         .form-group label { display: block; font-weight: 600; font-size: 14.5px; margin-bottom: 8px; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; font-family: var(--font-body); font-size: 15px; }
         
+        /* Ajuste extra para o input da foto ficar com bom aspeto */
+        .form-group input[type="file"] { background: #fff; padding: 10px 18px; cursor: pointer; }
+
         @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; gap: 0; } }
 
         .btn-primary { background: var(--ink); color: var(--cream); padding: 15px 28px; border-radius: 999px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s; }
         .btn-primary:hover { background: var(--ink-soft); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .form-divider { border-top: 1px dashed var(--line); margin: 30px 0; }
     </style>
@@ -91,6 +95,12 @@
                         <label>Explique os detalhes (Descrição)</label>
                         <textarea id="txt_descricao" rows="4" placeholder="Ex: Preciso que cortem as silvas e limpem o entulho antes do verão." required></textarea>
                     </div>
+
+                    <!-- NOVO CAMPO: FOTOGRAFIA -->
+                    <div class="form-group">
+                        <label for="foto-pedido"><i class="fa-solid fa-camera"></i> Fotografia do local/serviço (Opcional)</label>
+                        <input type="file" id="foto-pedido" accept="image/png, image/jpeg, image/jpg" />
+                    </div>
                     
                     <button type="submit" class="btn-primary">
                         <i class="fa-solid fa-paper-plane"></i> Enviar Pedido
@@ -120,46 +130,59 @@
         async function enviarPedido(event) {
             event.preventDefault();
             
-            // Buscar os novos campos de contacto
+            // 1. Buscar todos os campos do formulário
             const nomeInput = document.getElementById('txt_nome').value;
             const emailInput = document.getElementById('txt_email').value;
             const telefoneInput = document.getElementById('txt_telefone').value;
-            
-            // Buscar os campos de serviço
             const tituloInput = document.getElementById('txt_titulo').value;
             const descricaoInput = document.getElementById('txt_descricao').value;
             const tipoInput = document.getElementById('sel_tipo').value;
             
-            const botaoBotao = event.target.querySelector('button');
+            // Buscar o ficheiro de imagem (se existir)
+            const campoFoto = document.getElementById('foto-pedido');
+            const ficheiro = campoFoto.files[0];
+            let linkDaFoto = null;
             
-            botaoBotao.textContent = "A guardar pedido...";
+            // 2. Preparar o botão para estado de "Carregamento"
+            const botaoBotao = event.target.querySelector('button');
+            botaoBotao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A processar pedido...';
             botaoBotao.disabled = true;
 
-            // Enviar tudo para as novas colunas no Supabase
-            const { data, error } = await baseDados.from('pedidos').insert([
-                { 
-                    nome_cliente: nomeInput,
-                    email_cliente: emailInput,
-                    telefone_cliente: telefoneInput,
-                    titulo: tituloInput, 
-                    descricao: descricaoInput, 
-                    tipo_servico: tipoInput 
-                }
-            ]).select();
+            try {
+                // 3. Fazer o Upload da Imagem (se o cliente tiver escolhido uma)
+                if (ficheiro) {
+                    const nomeUnico = Date.now() + "_" + ficheiro.name.replace(/\s+/g, '-');
+                    
+                    const { data: uploadData, error: uploadError } = await baseDados
+                        .storage
+                        .from('fotos-pedidos')
+                        .upload(nomeUnico, ficheiro);
 
-            if (error) {
-                console.error("Erro do Supabase:", error);
-                alert('Erro ao enviar pedido. Verificaste se criaste as novas colunas no Supabase (nome_cliente, email_cliente, telefone_cliente)?');
-                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
-                botaoBotao.disabled = false;
-            } else {
+                    if (uploadError) throw uploadError;
+
+                    // Pedir o link público da imagem enviada
+                    const { data: linkData } = baseDados.storage.from('fotos-pedidos').getPublicUrl(nomeUnico);
+                    linkDaFoto = linkData.publicUrl;
+                }
+
+                // 4. Enviar os dados de texto + link da foto para a Base de Dados
+                const { data, error } = await baseDados.from('pedidos').insert([
+                    { 
+                        nome_cliente: nomeInput,
+                        email_cliente: emailInput,
+                        telefone_cliente: telefoneInput,
+                        titulo: tituloInput, 
+                        descricao: descricaoInput, 
+                        tipo_servico: tipoInput,
+                        foto_url: linkDaFoto // <-- Guardar o link da imagem!
+                    }
+                ]).select();
+
+                if (error) throw error;
                 
-                // ==========================================
-                // INÍCIO DO SISTEMA DE EMAIL PREMIUM
-                // ==========================================
+                // 5. Sucesso! Preparar o Email e Aviso Premium
                 const pedidoGuardado = data[0]; 
 
-                // 1. Preparar o pacote com as variáveis exatas do template EmailJS
                 const dadosEmail = {
                     nome_cliente: pedidoGuardado.nome_cliente,
                     email_cliente: pedidoGuardado.email_cliente,
@@ -167,32 +190,31 @@
                     id_pedido: pedidoGuardado.id
                 };
 
-                // 2. Disparar o email de forma invisível
                 emailjs.send("service_xqo1u2b", "template_gpwoicq", dadosEmail)
                     .then(() => console.log("Email Premium enviado com sucesso!"))
                     .catch((erro) => console.error("Erro silencioso no email:", erro));
 
-                // 3. Mostrar o Pop-up Premium ao Cliente
                 Swal.fire({
                     title: "Pedido Recebido! 🎉",
                     html: `O seu número de acompanhamento é o <b>#${pedidoGuardado.id}</b>.<br><br>Enviámos-lhe um email com todos os detalhes.`,
                     icon: "success",
-                    confirmButtonColor: "#1C2118", // Usa a cor 'ink' do teu site
+                    confirmButtonColor: "#1C2118", 
                     confirmButtonText: "Acompanhar Pedido",
-                    allowOutsideClick: false // Impede que ele feche o aviso sem querer
+                    allowOutsideClick: false 
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Limpa o formulário, repõe o botão e leva-o para o rastreio
                         document.getElementById('form-pedido').reset();
                         botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
                         botaoBotao.disabled = false;
                         window.location.href = "rastrear.html";
                     }
                 });
-                // ==========================================
-                // FIM DO SISTEMA DE EMAIL PREMIUM
-                // ==========================================
-                
+
+            } catch (erro) {
+                console.error("Erro no processamento:", erro);
+                alert('Erro ao enviar pedido. Verificaste se criaste o bucket "fotos-pedidos" e a coluna "foto_url"?');
+                botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
+                botaoBotao.disabled = false;
             }
         }
     </script>
