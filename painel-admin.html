@@ -94,7 +94,7 @@
                         <p><strong>Currículo:</strong> <a href="${urlCurriculo}" target="_blank" style="color: var(--clay);">Ver Documento</a></p>
                         <div class="btn-acoes">
                             <button class="btn-aprovar" onclick="aprovarProfissional(${prof.id}, '${prof.nome}', '${prof.email}')">✓ Aprovar</button>
-                            <button class="btn-recusar" onclick="eliminarProfissional(${prof.id}, '${prof.nome}', 'pendente')">✗ Recusar</button>
+                            <button class="btn-recusar" onclick="eliminarProfissional(${prof.id}, '${prof.nome}', 'pendente', '${prof.email}')">✗ Recusar</button>
                         </div>
                     `;
                     grid.appendChild(cartao);
@@ -125,7 +125,7 @@
                         <p><strong>Especialidade:</strong> ${prof.especialidade}</p>
                         <p><strong>Email:</strong> ${prof.email}</p>
                         <p><strong>Telemóvel:</strong> ${prof.telemovel}</p>
-                        <button class="btn-remover" onclick="eliminarProfissional(${prof.id}, '${prof.nome}', 'aprovado')">
+                        <button class="btn-remover" onclick="eliminarProfissional(${prof.id}, '${prof.nome}', 'aprovado', '${prof.email}')">
                             <i class="fa-solid fa-trash"></i> Remover da Equipa
                         </button>
                     `;
@@ -134,31 +134,37 @@
             }
         }
 
-        // Aprovar (Muda para True)
+        // === MAGIA DA APROVAÇÃO 100% AUTOMÁTICA ===
         async function aprovarProfissional(id, nome, email) {
-            Swal.fire({ title: 'A aprovar...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            Swal.fire({ title: 'A aprovar e a criar acessos...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
             try {
-                const { error } = await baseDados.from('profissionais').update({ aprovado: true }).eq('id', id);
-                if (error) throw error;
+                // 1. Muda o estado para Aprovado na tabela original
+                const { error: erroUpdate } = await baseDados.from('profissionais').update({ aprovado: true }).eq('id', id);
+                if (erroUpdate) throw erroUpdate;
 
-                // ATENÇÃO: COLA O TEU TEMPLATE ID AQUI
+                // 2. Insere o email na "Lista VIP" para ele poder fazer login
+                const { error: erroInsert } = await baseDados.from('profissionais_aprovados').insert([{ email: email.toLowerCase().trim() }]);
+                if (erroInsert) throw erroInsert;
+
+                // 3. Dispara o email de boas-vindas
                 const templateAprovacao = "template_rew7noa"; 
                 await emailjs.send("service_xqo1u2b", templateAprovacao, { nome_profissional: nome, email_profissional: email });
 
-                Swal.fire('Aprovado!', `${nome} está agora na equipa.`, 'success');
+                Swal.fire('Aprovado!', `${nome} está agora na equipa e já pode fazer login.`, 'success');
                 carregarPendentes();
                 carregarAprovados();
             } catch (erro) {
-                Swal.fire('Erro', erro.message, 'error');
+                console.error(erro);
+                Swal.fire('Erro', 'Ocorreu um erro ao tentar aprovar o profissional.', 'error');
             }
         }
 
         // Eliminar (Serve tanto para recusar pendentes como remover aprovados)
-        async function eliminarProfissional(id, nome, tipo) {
+        async function eliminarProfissional(id, nome, tipo, email) {
             const mensagem = tipo === 'pendente' 
                 ? `Tem a certeza que deseja eliminar a candidatura de ${nome}?`
-                : `Tem a certeza que deseja remover ${nome} da sua equipa ativa? O perfil vai desaparecer do site público.`;
+                : `Tem a certeza que deseja remover ${nome} da sua equipa ativa? Os acessos de login serão imediatamente bloqueados.`;
 
             const confirmacao = await Swal.fire({
                 title: 'Tem a certeza?',
@@ -174,8 +180,14 @@
             if (confirmacao.isConfirmed) {
                 Swal.fire({ title: 'A processar...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 try {
-                    const { error } = await baseDados.from('profissionais').delete().eq('id', id);
-                    if (error) throw error;
+                    // 1. Apaga da tabela original
+                    const { error: erroDelete } = await baseDados.from('profissionais').delete().eq('id', id);
+                    if (erroDelete) throw erroDelete;
+
+                    // 2. Se for um aprovado, remove-o também da "Lista VIP" para cortar o acesso
+                    if (tipo === 'aprovado') {
+                        await baseDados.from('profissionais_aprovados').delete().eq('email', email.toLowerCase().trim());
+                    }
 
                     Swal.fire('Removido', 'Ação concluída com sucesso.', 'success');
                     carregarPendentes();
