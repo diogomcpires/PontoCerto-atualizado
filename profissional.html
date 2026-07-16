@@ -98,11 +98,11 @@
         }
 
         // 4. Carregar todos os trabalhos relevantes
+       // 4. Carregar todos os trabalhos relevantes
         async function carregarTrabalhos() {
             const divPendentes = document.getElementById('lista-pendentes');
             const divAceites = document.getElementById('lista-aceites');
 
-            // Busca pedidos pendentes E os pedidos aceites por este profissional
             const { data: pedidos, error } = await baseDados
                 .from('pedidos')
                 .select('*')
@@ -122,17 +122,25 @@
             pedidos.forEach(pedido => {
                 const estado = pedido.estado ? pedido.estado.toUpperCase() : 'PENDENTE';
                 
-                // Ignorar concluídos
                 if (estado === 'CONCLUIDO') return; 
-
                 const isAceite = estado === 'ACEITE';
-                
-                // Se estiver aceite e NÃO for deste profissional, ignora
                 if (isAceite && pedido.id_profissional !== meuPerfil.id) return;
 
-                // Construção dinâmica da parte inferior do cartão
+                // --- MAGIA DA FOTO AQUI ---
+                let htmlFoto = '';
+                if (pedido.foto_url) {
+                    htmlFoto = `
+                        <div style="margin-bottom: 15px;">
+                            <a href="${pedido.foto_url}" target="_blank" style="text-decoration: none;">
+                                <img src="${pedido.foto_url}" style="width: 100%; border-radius: 8px; border: 1px solid var(--sage); cursor: pointer;" alt="Foto do pedido">
+                                <small style="display:block; color: var(--sage); margin-top:5px; font-size: 12px;"><i class="fa-solid fa-magnifying-glass"></i> Clicar para ampliar</small>
+                            </a>
+                        </div>
+                    `;
+                }
+                // --------------------------
+
                 let conteudoInferior = '';
-                
                 if (isAceite) {
                     conteudoInferior = `
                         <div class="info-preco-aceite">
@@ -154,7 +162,6 @@
                     `;
                 }
 
-                // Montar o Cartão Completo
                 const cartao = `
                     <div class="cartao-trabalho">
                         <div class="cartao-topo">
@@ -162,6 +169,7 @@
                             <span style="font-family: monospace; opacity: 0.5;">REF #${pedido.id}</span>
                         </div>
                         <h3>${pedido.titulo || 'Sem título'}</h3>
+                        ${htmlFoto}
                         <p>${pedido.descricao || 'O cliente não forneceu descrição detalhada.'}</p>
                         ${conteudoInferior}
                     </div>
@@ -179,7 +187,6 @@
             if (countPendentes === 0) divPendentes.innerHTML = '<div class="aviso-vazio">Não há novos pedidos na sua zona de momento.</div>';
             if (countAceites === 0) divAceites.innerHTML = '<div class="aviso-vazio">Não tem trabalhos em curso atualmente.</div>';
         }
-
         // 5. Função para enviar o orçamento à BD
         async function enviarOrcamento(event, idPedido) {
             const btn = event.currentTarget;
