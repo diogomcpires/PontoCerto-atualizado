@@ -55,7 +55,6 @@
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         
-        // AQUI ESTÁ A CORREÇÃO (usar supabaseBase em vez de supabase)
         const supabaseBase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = true;
@@ -74,7 +73,7 @@
         }
 
         async function handleAuth(e) {
-            e.preventDefault(); // Impede que a página recarregue e coloque o "?"
+            e.preventDefault(); 
             
             const email = document.getElementById('email').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
@@ -91,12 +90,22 @@
                     const { data, error } = await supabaseBase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     
-                    // VERIFICAÇÃO (Lista VIP)
-                    const { data: aprovado } = await supabaseBase.from('prof_aprovados').select('email').eq('email', email);
+                    // VERIFICAÇÃO (Lista VIP com Espiões)
+                    console.log("1. A procurar este email na tabela prof_aprovados:", email);
+
+                    const { data: aprovado, error: erroVIP } = await supabaseBase
+                        .from('prof_aprovados')
+                        .select('email')
+                        .eq('email', email);
+                    
+                    console.log("2. O que o Supabase encontrou:", aprovado);
+                    if (erroVIP) console.error("3. Erro do Supabase:", erroVIP);
                     
                     if (aprovado && aprovado.length > 0) {
+                        console.log("4. SUCESSO! É VIP. A redirecionar para o painel...");
                         window.location.href = "painel.html"; 
                     } else {
+                        console.log("4. FALHOU. Não encontrou na lista. A redirecionar para o index...");
                         window.location.href = "index.html"; 
                     }
                 } else {
@@ -109,7 +118,7 @@
                     if (error) throw error;
                     
                     alert("Conta criada com sucesso! Já pode fazer login."); 
-                    toggleMode(e); // Muda para login
+                    toggleMode(e); 
                 }
             } catch (error) {
                 msg.style.display = 'block'; 
