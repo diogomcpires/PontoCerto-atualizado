@@ -14,10 +14,12 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
         input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
-        button { width: 100%; padding: 14px; background: var(--ink); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        button { width: 100%; padding: 14px; background: var(--ink); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        button:hover { background: #3D4A2E; }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
         .footer-links { text-align: center; margin-top: 20px; font-size: 14px; }
         .footer-links a { color: var(--clay); text-decoration: none; font-weight: 600; }
-        #msg-erro { color: var(--red, #d32f2f); text-align: center; margin-bottom: 15px; display: none; }
+        #msg-erro { color: #d32f2f; background: #ffebee; padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 15px; display: none; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -36,7 +38,7 @@
             </div>
             <div class="form-group">
                 <label>Palavra-passe</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" required minlength="6">
             </div>
             <button type="submit" id="btn-submit">Entrar</button>
         </form>
@@ -52,7 +54,9 @@
     <script>
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // AQUI ESTAVA O ERRO! Alterado para "supabaseBase"
+        const supabaseBase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = true;
 
@@ -63,35 +67,63 @@
             document.getElementById('btn-submit').innerText = isLogin ? "Entrar" : "Registar";
             document.getElementById('texto-alternativo').innerText = isLogin ? "Ainda não tem conta?" : "Já tem conta?";
             document.getElementById('link-alternativo').innerText = isLogin ? "Criar conta" : "Entrar";
+            
             document.getElementById('nome-group').style.display = isLogin ? "none" : "block";
+            document.getElementById('nome').required = !isLogin; // O nome só é obrigatório se for registo
+            document.getElementById('msg-erro').style.display = 'none'; // Limpa erros ao mudar de modo
         }
 
         async function handleAuth(e) {
-            e.preventDefault();
+            e.preventDefault(); // Impede o "refresh" e o "?" no link
+            
             const email = document.getElementById('email').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
             const msg = document.getElementById('msg-erro');
+            const btn = document.getElementById('btn-submit');
             
-            if (isLogin) {
-                // LOGAR
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) { msg.style.display = 'block'; msg.innerText = error.message; return; }
-                
-                // REDIRECIONAR INTELIGENTE
-                const { data: aprovado } = await supabase.from('profissionais_aprovados').select('email').eq('email', email);
-                if (aprovado && aprovado.length > 0) {
-                    window.location.href = "painel.html"; // Vai para o painel de trabalhos
+            msg.style.display = 'none';
+            btn.innerText = 'A processar...';
+            btn.disabled = true;
+            
+            try {
+                if (isLogin) {
+                    // MODO: LOGAR
+                    const { data, error } = await supabaseBase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    
+                    // VERIFICAÇÃO INTELIGENTE (Lista VIP)
+                    const { data: aprovado } = await supabaseBase.from('profissionais_aprovados').select('email').eq('email', email);
+                    
+                    if (aprovado && aprovado.length > 0) {
+                        window.location.href = "painel.html"; 
+                    } else {
+                        window.location.href = "index.html"; 
+                    }
                 } else {
-                    window.location.href = "index.html"; // Vai para a página de cliente
+                    // MODO: REGISTAR
+                    const nome = document.getElementById('nome').value;
+                    const { error } = await supabaseBase.auth.signUp({ 
+                        email, password, options: { data: { nome_completo: nome } } 
+                    });
+                    
+                    if (error) throw error;
+                    
+                    alert("Conta criada com sucesso! Já pode fazer login."); 
+                    toggleMode(e); // Muda o ecrã de volta para o login para a pessoa entrar
                 }
-            } else {
-                // REGISTAR
-                const nome = document.getElementById('nome').value;
-                const { error } = await supabase.auth.signUp({ 
-                    email, password, options: { data: { nome_completo: nome } } 
-                });
-                if (error) { msg.style.display = 'block'; msg.innerText = error.message; }
-                else { alert("Conta criada! Já pode fazer login."); toggleMode(e); }
+            } catch (error) {
+                // TRATAMENTO DE ERROS VISUAL
+                msg.style.display = 'block'; 
+                if (error.message === "Invalid login credentials") {
+                    msg.innerText = "Email ou palavra-passe incorretos.";
+                } else if (error.message === "User already registered") {
+                    msg.innerText = "Este email já tem conta criada.";
+                } else {
+                    msg.innerText = "Ocorreu um erro. Tente novamente.";
+                }
+            } finally {
+                btn.innerText = isLogin ? "Entrar" : "Registar";
+                btn.disabled = false;
             }
         }
     </script>
