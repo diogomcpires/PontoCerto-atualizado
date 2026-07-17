@@ -335,21 +335,47 @@
             }
         }
 
-      async function iniciarPagamento() {
+async function iniciarPagamento() {
             if (!pedidoAtual) return;
 
             const botao = document.getElementById('btn-stripe');
-            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A simular pagamento...';
+            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
             botao.style.opacity = '0.7';
             botao.disabled = true;
 
-            // SIMULAÇÃO: 
-            // Em vez de irmos ao Stripe real, esperamos 1.5 segundos e redirecionamos 
-            // a página exatamente para onde o Stripe te iria devolver na versão final!
-            setTimeout(() => {
-                const linkAtual = window.location.href.split('?')[0]; 
-                window.location.href = `${linkAtual}?pagamento=sucesso&id_pedido=${pedidoAtual.id}`;
-            }, 1500);
+            const precoTotal = pedidoAtual.preco_total || 0;
+            const valorSinal = precoTotal * 0.15;
+
+            try {
+                // Chama a Edge Function do Stripe que acabámos de criar!
+                const { data, error } = await baseDados.functions.invoke('pagar-sinal', {
+                    body: {
+                        pedido_id: pedidoAtual.id,
+                        valor_sinal: valorSinal,
+                        titulo_servico: pedidoAtual.titulo || 'Serviço PontoCerto'
+                    }
+                });
+
+                if (error) throw error;
+                
+                // Vai para o Checkout seguro do Stripe
+                if (data && data.url) {
+                    window.location.href = data.url;
+                } else {
+                    throw new Error("O Stripe não devolveu o link.");
+                }
+            } catch (erro) {
+                console.error("Erro no pagamento:", erro);
+                Swal.fire({
+                    title: 'Erro de Pagamento',
+                    text: 'Não foi possível ligar ao banco. Tente novamente.',
+                    icon: 'error',
+                    confirmButtonColor: '#e06666'
+                });
+                botao.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança';
+                botao.style.opacity = '1';
+                botao.disabled = false;
+            }
         }
     </script>
 </body>
