@@ -39,6 +39,10 @@
             <div class="form-group">
                 <label>Palavra-passe</label>
                 <input type="password" id="password" required minlength="6">
+                <!-- Link adicionado aqui -->
+                <a href="recuperar.html" id="link-recuperar" style="display: block; text-align: right; font-size: 13px; color: var(--clay); margin-top: 8px; font-weight: 500; text-decoration: none;">
+                    Esqueci-me da palavra-passe
+                </a>
             </div>
             <button type="submit" id="btn-submit">Entrar</button>
         </form>
@@ -47,7 +51,7 @@
             <a href="#" onclick="toggleMode(event)" id="link-alternativo">Criar conta</a>
         </div>
         <div class="footer-links" style="margin-top: 15px;">
-            <a href="index.html">← Voltar ao site</a>
+            <a href="index.html" style="color: var(--ink);">← Voltar ao site</a>
         </div>
     </div>
 
@@ -70,6 +74,9 @@
             document.getElementById('nome-group').style.display = isLogin ? "none" : "block";
             document.getElementById('nome').required = !isLogin; 
             document.getElementById('msg-erro').style.display = 'none'; 
+            
+            // Esconde o link de recuperar a password quando está a criar conta
+            document.getElementById('link-recuperar').style.display = isLogin ? "block" : "none";
         }
 
         async function handleAuth(e) {
