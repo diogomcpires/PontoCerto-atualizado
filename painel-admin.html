@@ -144,7 +144,7 @@
                 if (erroUpdate) throw erroUpdate;
 
                 // 2. Insere o email na "Lista VIP" para ele poder fazer login
-                const { error: erroInsert } = await baseDados.from('profissionais_aprovados').insert([{ email: email.toLowerCase().trim() }]);
+                const { error: erroInsert } = await baseDados.from('prof_aprovados').insert([{ email: email.toLowerCase().trim() }]);
                 if (erroInsert) throw erroInsert;
 
                 // 3. Dispara o email de boas-vindas
@@ -186,7 +186,7 @@
 
                     // 2. Se for um aprovado, remove-o também da "Lista VIP" para cortar o acesso
                     if (tipo === 'aprovado') {
-                        await baseDados.from('profissionais_aprovados').delete().eq('email', email.toLowerCase().trim());
+                        await baseDados.from('prof_aprovados').delete().eq('email', email.toLowerCase().trim());
                     }
 
                     Swal.fire('Removido', 'Ação concluída com sucesso.', 'success');
