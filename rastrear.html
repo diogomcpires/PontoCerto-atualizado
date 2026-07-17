@@ -335,42 +335,21 @@
             }
         }
 
-        async function iniciarPagamento() {
+      async function iniciarPagamento() {
             if (!pedidoAtual) return;
 
             const botao = document.getElementById('btn-stripe');
-            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
+            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A simular pagamento...';
             botao.style.opacity = '0.7';
             botao.disabled = true;
 
-            const precoTotal = pedidoAtual.preco_total || 0;
-            const valorSinal = precoTotal * 0.15;
-
-            try {
-                const { data, error } = await baseDados.functions.invoke('pagar-sinal', {
-                    body: {
-                        pedido_id: pedidoAtual.id,
-                        valor_sinal: valorSinal,
-                        titulo_servico: pedidoAtual.titulo || 'Serviço PontoCerto'
-                    }
-                });
-
-                if (error) throw error;
-                
-                if (data && data.url) {
-                    window.location.href = data.url;
-                } else {
-                    // Para testar na tua máquina sem o Edge Function real:
-                    // window.location.href = `${window.location.href}?pagamento=sucesso&id_pedido=${pedidoAtual.id}`;
-                    throw new Error("O Stripe não devolveu o link.");
-                }
-            } catch (erro) {
-                console.error(erro);
-                alert("Ocorreu um erro ao gerar o pagamento. Tente novamente.");
-                botao.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança';
-                botao.style.opacity = '1';
-                botao.disabled = false;
-            }
+            // SIMULAÇÃO: 
+            // Em vez de irmos ao Stripe real, esperamos 1.5 segundos e redirecionamos 
+            // a página exatamente para onde o Stripe te iria devolver na versão final!
+            setTimeout(() => {
+                const linkAtual = window.location.href.split('?')[0]; 
+                window.location.href = `${linkAtual}?pagamento=sucesso&id_pedido=${pedidoAtual.id}`;
+            }, 1500);
         }
     </script>
 </body>
