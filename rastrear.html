@@ -71,7 +71,6 @@
         .zona-pagamento h4 { font-family: var(--font-display); font-size: 22px; color: var(--ink); margin-bottom: 8px; }
         .zona-pagamento p { color: var(--ink-soft); font-size: 15px; margin-bottom: 20px; }
         
-        /* NOVO DESIGN DO RECIBO 15% */
         .caixa-recibo { background: #fcfcfc; border: 1px solid var(--line); padding: 20px; border-radius: 12px; max-width: 350px; margin: 0 auto 24px; text-align: left; }
         .linha-recibo { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
         .linha-recibo.destaque { color: var(--clay); font-weight: 700; font-size: 18px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ccc; }
@@ -79,6 +78,10 @@
         
         .btn-pagar { background: var(--clay); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-family: var(--font-body); font-size: 16px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; width: 100%; max-width: 350px; justify-content: center; }
         .btn-pagar:hover { background: var(--clay-deep); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(184, 137, 94, 0.3); }
+
+        /* BOTÃO WHATSAPP */
+        .btn-wpp { background: #25D366; color: white; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-family: var(--font-body); font-size: 16px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; width: 100%; max-width: 350px; justify-content: center; text-decoration: none; margin-top: 15px; }
+        .btn-wpp:hover { background: #1ebd5a; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3); }
 
         .theme-pendente .estado-badge { background: #FFF3E0; color: #E65100; border: 1px solid #FFB74D; }
         .theme-pendente .mensagem-box { background: #FFF3E0; color: #E65100; border: 1px dashed #FFB74D; }
@@ -183,8 +186,34 @@
         const baseDados = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let pedidoAtual = null;
 
+        // VERIFICA SE O CLIENTE ACABOU DE PAGAR (Para testar o fluxo completo)
+        async function verificarRetornoStripe() {
+            const parametrosUrl = new URLSearchParams(window.location.search);
+            const estadoPagamento = parametrosUrl.get('pagamento');
+            const idPedidoStripe = parametrosUrl.get('id_pedido');
+
+            if (estadoPagamento === 'sucesso' && idPedidoStripe) {
+                // Atualiza o estado na base de dados para 'CONFIRMADO'
+                const { error } = await baseDados
+                    .from('pedidos')
+                    .update({ estado: 'confirmado' })
+                    .eq('id', idPedidoStripe);
+
+                if (!error) {
+                    window.history.replaceState(null, '', window.location.pathname); // Limpa o URL
+                    document.getElementById('id-pedido').value = idPedidoStripe;
+                    
+                    // Simula o clique no botão para procurar automaticamente
+                    procurarPedido({ preventDefault: () => {} });
+                }
+            }
+        }
+        
+        // Arranca a verificação mal a página carrega
+        verificarRetornoStripe();
+
         async function procurarPedido(event) {
-            event.preventDefault(); 
+            if(event && event.preventDefault) event.preventDefault(); 
             const id = document.getElementById('id-pedido').value;
             const btn = document.getElementById('btn-buscar');
             const resultContainer = document.getElementById('resultado-container');
@@ -241,23 +270,41 @@
                 msgTitulo.textContent = "Serviço Fechado!";
                 msgDesc.textContent = "O profissional marcou este trabalho como concluído. Obrigado por confiar na PontoCerto!";
 
+            } else if (estadoStr === 'CONFIRMADO' || estadoStr === 'PAGO') {
+                // NOVIDADE: ECRÃ PÓS-PAGAMENTO (WHATSAPP)
+                cartao.classList.add('theme-aceite');
+                badge.textContent = "TRABALHO ADJUDICADO";
+                progresso.style.width = "50%"; 
+                stepAceite.classList.add('active');
+                
+                msgIcon.className = "fa-solid fa-circle-check";
+                msgTitulo.textContent = "Pagamento Confirmado!";
+                
+                const prefixo = "351";
+                const num = pedido.telefone_profissional || '';
+                const nome = pedido.nome_profissional || 'o profissional';
+                const mensagem = encodeURIComponent(`Olá ${nome}! Sou o cliente do pedido #${pedido.id} no PontoCerto. Já paguei o sinal e gostava de combinar os detalhes do serviço.`);
+                
+                msgDesc.innerHTML = `O sinal foi pago com sucesso e o trabalho está garantido. O profissional <strong>${nome}</strong> está à sua espera para agendar a data e hora.<br><br>
+                <a href="https://wa.me/${prefixo}${num}?text=${mensagem}" target="_blank" class="btn-wpp">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> Falar no WhatsApp
+                </a>`;
+
             } else if (estadoStr === 'ACEITE') {
+                // ECRÃ DO RECIBO DOS 15% (AGUARDA PAGAMENTO)
                 cartao.classList.add('theme-aceite');
                 badge.textContent = "AGUARDA SINAL";
                 progresso.style.width = "50%"; 
                 stepAceite.classList.add('active');
                 
-                // NOVIDADE: Ler os dados da base de dados e fazer a matemática!
                 const precoTotal = pedido.preco_total || 0;
-                const valorSinal = precoTotal * 0.15; // Calcula 15%
-                const valorRestante = precoTotal - valorSinal; // O que sobra
+                const valorSinal = precoTotal * 0.15; 
+                const valorRestante = precoTotal - valorSinal; 
 
                 msgIcon.className = "fa-solid fa-handshake-angle";
-                // Mostra o teu nome verdadeiro que veio da Base de Dados!
                 msgTitulo.textContent = `Orçamento de ${pedido.nome_profissional || 'um Profissional'}`;
                 msgDesc.textContent = `O seu pedido foi analisado e avaliado. Pague o sinal para trancar a agenda e receber o número de telemóvel direto do profissional.`;
 
-                // Desenhar a caixa de recibo com a matemática de 15%
                 document.getElementById('recibo-calculo').innerHTML = `
                     <div class="caixa-recibo">
                         <div class="linha-recibo">
@@ -278,6 +325,7 @@
                 document.getElementById('zona-pagamento').style.display = 'block';
 
             } else {
+                // PENDENTE
                 cartao.classList.add('theme-pendente');
                 badge.textContent = "A AGUARDAR";
                 progresso.style.width = "0%"; 
@@ -287,44 +335,43 @@
             }
         }
 
-async function iniciarPagamento() {
-    if (!pedidoAtual) return;
+        async function iniciarPagamento() {
+            if (!pedidoAtual) return;
 
-    const botao = document.getElementById('btn-stripe');
-    botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
-    botao.style.opacity = '0.7';
-    botao.disabled = true;
+            const botao = document.getElementById('btn-stripe');
+            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A ligar ao banco...';
+            botao.style.opacity = '0.7';
+            botao.disabled = true;
 
-    // A Matemática Mágica!
-    const precoTotal = pedidoAtual.preco_total || 0;
-    const valorSinal = precoTotal * 0.15;
+            const precoTotal = pedidoAtual.preco_total || 0;
+            const valorSinal = precoTotal * 0.15;
 
-    try {
-        // Pede à nuvem para gerar o link único
-        const { data, error } = await baseDados.functions.invoke('pagar-sinal', {
-            body: {
-                pedido_id: pedidoAtual.id,
-                valor_sinal: valorSinal,
-                titulo_servico: pedidoAtual.titulo || 'Serviço PontoCerto'
+            try {
+                const { data, error } = await baseDados.functions.invoke('pagar-sinal', {
+                    body: {
+                        pedido_id: pedidoAtual.id,
+                        valor_sinal: valorSinal,
+                        titulo_servico: pedidoAtual.titulo || 'Serviço PontoCerto'
+                    }
+                });
+
+                if (error) throw error;
+                
+                if (data && data.url) {
+                    window.location.href = data.url;
+                } else {
+                    // Para testar na tua máquina sem o Edge Function real:
+                    // window.location.href = `${window.location.href}?pagamento=sucesso&id_pedido=${pedidoAtual.id}`;
+                    throw new Error("O Stripe não devolveu o link.");
+                }
+            } catch (erro) {
+                console.error(erro);
+                alert("Ocorreu um erro ao gerar o pagamento. Tente novamente.");
+                botao.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança';
+                botao.style.opacity = '1';
+                botao.disabled = false;
             }
-        });
-
-        if (error) throw error;
-        
-        // Se correu bem, envia o cliente para o Stripe com o valor exato!
-        if (data && data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error("O Stripe não devolveu o link.");
         }
-    } catch (erro) {
-        console.error(erro);
-        alert("Ocorreu um erro ao gerar o pagamento. Tente novamente.");
-        botao.innerHTML = '<i class="fa-solid fa-lock"></i> Pagar Sinal em Segurança';
-        botao.style.opacity = '1';
-        botao.disabled = false;
-    }
-}
     </script>
 </body>
 </html>
