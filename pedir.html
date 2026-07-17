@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer um Pedido - PontoCerto</title>
+
+    <div class="form-group">
+                        <label>Localização (Concelho / Freguesia)</label>
+                        <input type="text" id="txt_localizacao" placeholder="Ex: Odivelas, Ramada" required>
+                    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -137,6 +142,7 @@
             const tituloInput = document.getElementById('txt_titulo').value;
             const descricaoInput = document.getElementById('txt_descricao').value;
             const tipoInput = document.getElementById('sel_tipo').value;
+            const localizacaoInput = document.getElementById('txt_localizacao').value; // <-- Campo Novo
             
             // Buscar o ficheiro de imagem (se existir)
             const campoFoto = document.getElementById('foto-pedido');
@@ -165,7 +171,7 @@
                     linkDaFoto = linkData.publicUrl;
                 }
 
-                // 4. Enviar os dados de texto + link da foto para a Base de Dados
+                // 4. Enviar os dados de texto + link da foto + localização para a Base de Dados
                 const { data, error } = await baseDados.from('pedidos').insert([
                     { 
                         nome_cliente: nomeInput,
@@ -174,7 +180,8 @@
                         titulo: tituloInput, 
                         descricao: descricaoInput, 
                         tipo_servico: tipoInput,
-                        foto_url: linkDaFoto // <-- Guardar o link da imagem!
+                        localizacao: localizacaoInput, // <-- Guardado na base de dados!
+                        foto_url: linkDaFoto 
                     }
                 ]).select();
 
@@ -196,7 +203,7 @@
 
                 Swal.fire({
                     title: "Pedido Recebido! 🎉",
-                    html: `O seu número de acompanhamento é o <b>#${pedidoGuardado.id}</b>.<br><br>Enviámos-lhe um email com todos os detalhes.`,
+                    html: `O seu número de acompanhamento é o <b>#${pedidoGuardado.id}</b>.<br><br>A sua localização (<b>${pedidoGuardado.localizacao}</b>) já foi partilhada com os profissionais da zona.`,
                     icon: "success",
                     confirmButtonColor: "#1C2118", 
                     confirmButtonText: "Acompanhar Pedido",
@@ -206,13 +213,13 @@
                         document.getElementById('form-pedido').reset();
                         botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
                         botaoBotao.disabled = false;
-                        window.location.href = "rastrear.html";
+                        window.location.href = "rastrear.html"; // Manda o cliente para a área de seguimento
                     }
                 });
 
             } catch (erro) {
                 console.error("Erro no processamento:", erro);
-                alert('Erro ao enviar pedido. Verificaste se criaste o bucket "fotos-pedidos" e a coluna "foto_url"?');
+                alert('Erro ao enviar pedido. Verificaste se criaste o bucket "fotos-pedidos" e as colunas todas no Supabase?');
                 botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
                 botaoBotao.disabled = false;
             }
