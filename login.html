@@ -92,7 +92,7 @@
                     if (error) throw error;
                     
                     // VERIFICAÇÃO (Lista VIP)
-                    const { data: aprovado } = await supabaseBase.from('profissionais_aprovados').select('email').eq('email', email);
+                    const { data: aprovado } = await supabaseBase.from('prof_aprovados').select('email').eq('email', email);
                     
                     if (aprovado && aprovado.length > 0) {
                         window.location.href = "painel.html"; 
