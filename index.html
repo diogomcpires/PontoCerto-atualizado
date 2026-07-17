@@ -1093,7 +1093,7 @@
         </div>
     </footer>
 
-    <script>
+<script>
         // Efeito 3D subtil no hero e nos cartões
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1131,7 +1131,7 @@
         // ==========================================
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
-        const supabaseBase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseBase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function verificarSessao() {
             // Vai ver se existe alguma sessão no Supabase
@@ -1144,14 +1144,37 @@
             const linksAuth = document.querySelectorAll('.auth-link');
 
             if (utilizador) {
-                // COM SESSÃO INICIADA: Links apontam para os formulários
-                botoesPedir.forEach(b => b.href = "pedir.html");
-                botoesProf.forEach(b => b.href = "registar-profissional.html");
-                
-                // Muda o botão de login para "Sair da Conta"
+                // O UTILIZADOR FEZ LOGIN! 
+                // Vamos descobrir se é VIP (Profissional)
+                const { data: aprovado } = await supabaseBase
+                    .from('prof_aprovados')
+                    .select('email')
+                    .eq('email', utilizador.email);
+
+                const isProfissional = aprovado && aprovado.length > 0;
+
+                if (isProfissional) {
+                    // MODO PROFISSIONAL - Transforma os botões para voltar à área de trabalho
+                    botoesPedir.forEach(b => {
+                        b.innerHTML = '<i class="fa-solid fa-briefcase"></i> A Minha Área';
+                        b.href = "profissional.html";
+                        b.style.background = "linear-gradient(145deg, var(--clay), #d3a06d)"; // Dá uma cor diferente para destacar
+                        b.style.color = "var(--ink)";
+                    });
+                    
+                    // Esconde os botões de "Quero ser profissional" porque ele já é
+                    botoesProf.forEach(b => b.style.display = 'none');
+                    
+                } else {
+                    // MODO CLIENTE NORMAL - Prepara-se para pedir serviços
+                    botoesPedir.forEach(b => b.href = "pedir.html");
+                    botoesProf.forEach(b => b.href = "registar-profissional.html");
+                }
+
+                // Muda o botão do menu para "Sair da Conta" (Igual para os dois)
                 linksAuth.forEach(link => {
-                    link.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> Sair da Conta';
-                    link.href = "#"; // Não vai para lado nenhum, apenas executa o clique
+                    link.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> Sair';
+                    link.href = "#"; 
                     link.onclick = async (e) => {
                         e.preventDefault();
                         await supabaseBase.auth.signOut();
@@ -1159,7 +1182,7 @@
                     };
                 });
             } else {
-                // SEM SESSÃO: Os botões aparecem mas levam a pessoa a criar conta
+                // SEM SESSÃO: Os botões aparecem mas levam a pessoa para o login
                 botoesPedir.forEach(b => b.href = "login.html");
                 botoesProf.forEach(b => b.href = "login.html");
                 
