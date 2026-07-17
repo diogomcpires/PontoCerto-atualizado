@@ -1,0 +1,36 @@
+<!-- Exemplo do formulário (HTML) -->
+<form id="form-recuperar" onsubmit="pedirRecuperacao(event)">
+    <label>O teu Email</label>
+    <input type="email" id="txt_email" required>
+    <button type="submit" id="btn_recuperar">Enviar Link de Recuperação</button>
+</form>
+
+<!-- Motor (JavaScript) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+    const supabaseBase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function pedirRecuperacao(event) {
+        event.preventDefault();
+        const email = document.getElementById('txt_email').value;
+        const btn = document.getElementById('btn_recuperar');
+        btn.innerHTML = 'A enviar...';
+
+        // Pede ao Supabase para enviar o email
+        // O redirectTo tem de apontar para a tua futura página nova-passe.html
+        const urlDestino = window.location.origin + window.location.pathname.replace('recuperar.html', 'nova-passe.html');
+
+        const { data, error } = await supabaseBase.auth.resetPasswordForEmail(email, {
+            redirectTo: urlDestino,
+        });
+
+        if (error) {
+            alert('Erro: ' + error.message);
+        } else {
+            alert('Email enviado! Verifica a tua caixa de entrada (e o Spam).');
+        }
+        btn.innerHTML = 'Enviar Link de Recuperação';
+    }
+</script>
