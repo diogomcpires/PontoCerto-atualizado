@@ -55,7 +55,7 @@
         const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
         
-        // AQUI ESTAVA O ERRO! Alterado para "supabaseBase"
+        // AQUI ESTÁ A CORREÇÃO (usar supabaseBase em vez de supabase)
         const supabaseBase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isLogin = true;
@@ -69,12 +69,12 @@
             document.getElementById('link-alternativo').innerText = isLogin ? "Criar conta" : "Entrar";
             
             document.getElementById('nome-group').style.display = isLogin ? "none" : "block";
-            document.getElementById('nome').required = !isLogin; // O nome só é obrigatório se for registo
-            document.getElementById('msg-erro').style.display = 'none'; // Limpa erros ao mudar de modo
+            document.getElementById('nome').required = !isLogin; 
+            document.getElementById('msg-erro').style.display = 'none'; 
         }
 
         async function handleAuth(e) {
-            e.preventDefault(); // Impede o "refresh" e o "?" no link
+            e.preventDefault(); // Impede que a página recarregue e coloque o "?"
             
             const email = document.getElementById('email').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
@@ -91,7 +91,7 @@
                     const { data, error } = await supabaseBase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     
-                    // VERIFICAÇÃO INTELIGENTE (Lista VIP)
+                    // VERIFICAÇÃO (Lista VIP)
                     const { data: aprovado } = await supabaseBase.from('profissionais_aprovados').select('email').eq('email', email);
                     
                     if (aprovado && aprovado.length > 0) {
@@ -109,10 +109,9 @@
                     if (error) throw error;
                     
                     alert("Conta criada com sucesso! Já pode fazer login."); 
-                    toggleMode(e); // Muda o ecrã de volta para o login para a pessoa entrar
+                    toggleMode(e); // Muda para login
                 }
             } catch (error) {
-                // TRATAMENTO DE ERROS VISUAL
                 msg.style.display = 'block'; 
                 if (error.message === "Invalid login credentials") {
                     msg.innerText = "Email ou palavra-passe incorretos.";
