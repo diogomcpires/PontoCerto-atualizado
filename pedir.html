@@ -5,18 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer um Pedido - PontoCerto</title>
 
-    <div class="form-group">
-                        <label>Localização (Concelho / Freguesia)</label>
-                        <input type="text" id="txt_localizacao" placeholder="Ex: Odivelas, Ramada" required>
-                    </div>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root { --ink: #1C2118; --ink-soft: #3D4A2E; --cream: #F7F4EC; --cream-deep: #EFEADB; --sage: #8A9A5B; --sage-deep: #5F6E3D; --clay: #B8895E; --clay-deep: #8E6443; --line: rgba(28, 33, 24, 0.12); --font-display: "Fraunces", Georgia, serif; --font-body: "Inter", -apple-system, sans-serif; --font-mono: "Space Mono", monospace; --shadow-3d: 0 34px 80px rgba(28, 33, 24, 0.18), 0 10px 24px rgba(28, 33, 24, 0.10); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -84,6 +79,12 @@
 
                     <div class="form-divider"></div>
 
+                    <!-- CAMPO NOVO: LOCALIZAÇÃO EM DESTAQUE -->
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-map-location-dot"></i> A sua Região / Localização</label>
+                        <input type="text" id="txt_localizacao" placeholder="Ex: Odivelas, Lisboa" required style="border-color: var(--sage); border-width: 2px;">
+                    </div>
+
                     <div class="form-group">
                         <label>O que precisa? (Título)</label>
                         <input type="text" id="txt_titulo" placeholder="Ex: Limpeza de terreno de 400m2" required>
@@ -101,7 +102,6 @@
                         <textarea id="txt_descricao" rows="4" placeholder="Ex: Preciso que cortem as silvas e limpem o entulho antes do verão." required></textarea>
                     </div>
 
-                    <!-- NOVO CAMPO: FOTOGRAFIA -->
                     <div class="form-group">
                         <label for="foto-pedido"><i class="fa-solid fa-camera"></i> Fotografia do local/serviço (Opcional)</label>
                         <input type="file" id="foto-pedido" accept="image/png, image/jpeg, image/jpg" />
@@ -139,10 +139,10 @@
             const nomeInput = document.getElementById('txt_nome').value;
             const emailInput = document.getElementById('txt_email').value;
             const telefoneInput = document.getElementById('txt_telefone').value;
+            const localizacaoInput = document.getElementById('txt_localizacao').value; // <-- Variável da Localização
             const tituloInput = document.getElementById('txt_titulo').value;
             const descricaoInput = document.getElementById('txt_descricao').value;
             const tipoInput = document.getElementById('sel_tipo').value;
-            const localizacaoInput = document.getElementById('txt_localizacao').value; // <-- Campo Novo
             
             // Buscar o ficheiro de imagem (se existir)
             const campoFoto = document.getElementById('foto-pedido');
@@ -219,7 +219,7 @@
 
             } catch (erro) {
                 console.error("Erro no processamento:", erro);
-                alert('Erro ao enviar pedido. Verificaste se criaste o bucket "fotos-pedidos" e as colunas todas no Supabase?');
+                alert('Erro ao enviar pedido. Verificaste se criaste a coluna "localizacao" e o bucket de fotos no Supabase?');
                 botaoBotao.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
                 botaoBotao.disabled = false;
             }
