@@ -1,0 +1,35 @@
+<!-- Exemplo do formulário (HTML) -->
+<form id="form-nova-passe" onsubmit="atualizarPasse(event)">
+    <label>Nova Palavra-passe</label>
+    <input type="password" id="txt_nova_passe" required minlength="6">
+    <button type="submit" id="btn_atualizar">Guardar e Entrar</button>
+</form>
+
+<!-- Motor (JavaScript) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://ighogfphrheldebeuftr.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_5U6QW765VDQOau9w5ZbSIg_Pk988KWj';
+    const supabaseBase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function atualizarPasse(event) {
+        event.preventDefault();
+        const novaPasse = document.getElementById('txt_nova_passe').value;
+        const btn = document.getElementById('btn_atualizar');
+        btn.innerHTML = 'A guardar...';
+
+        // Atualiza a palavra-passe do utilizador que entrou através do link mágico
+        const { data, error } = await supabaseBase.auth.updateUser({
+            password: novaPasse
+        });
+
+        if (error) {
+            alert('Erro ao atualizar: ' + error.message);
+            btn.innerHTML = 'Guardar e Entrar';
+        } else {
+            alert('Palavra-passe alterada com sucesso!');
+            // Redireciona de volta para a página de login
+            window.location.href = 'login.html'; 
+        }
+    }
+</script>
