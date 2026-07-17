@@ -98,7 +98,6 @@
         }
 
         // 4. Carregar todos os trabalhos relevantes
-       // 4. Carregar todos os trabalhos relevantes
         async function carregarTrabalhos() {
             const divPendentes = document.getElementById('lista-pendentes');
             const divAceites = document.getElementById('lista-aceites');
@@ -162,6 +161,7 @@
                     `;
                 }
 
+                // --- CARTÃO DO TRABALHO COM A LOCALIZAÇÃO ADICIONADA ---
                 const cartao = `
                     <div class="cartao-trabalho">
                         <div class="cartao-topo">
@@ -169,6 +169,12 @@
                             <span style="font-family: monospace; opacity: 0.5;">REF #${pedido.id}</span>
                         </div>
                         <h3>${pedido.titulo || 'Sem título'}</h3>
+                        
+                        <!-- CAMPO DA LOCALIZAÇÃO -->
+                        <p style="color: var(--sage); font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-weight: 500;">
+                            <i class="fa-solid fa-location-dot"></i> ${pedido.localizacao || 'Localização não especificada'}
+                        </p>
+                        
                         ${htmlFoto}
                         <p>${pedido.descricao || 'O cliente não forneceu descrição detalhada.'}</p>
                         ${conteudoInferior}
@@ -187,6 +193,7 @@
             if (countPendentes === 0) divPendentes.innerHTML = '<div class="aviso-vazio">Não há novos pedidos na sua zona de momento.</div>';
             if (countAceites === 0) divAceites.innerHTML = '<div class="aviso-vazio">Não tem trabalhos em curso atualmente.</div>';
         }
+        
         // 5. Função para enviar o orçamento à BD
         async function enviarOrcamento(event, idPedido) {
             const btn = event.currentTarget;
